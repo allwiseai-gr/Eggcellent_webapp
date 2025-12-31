@@ -49,8 +49,11 @@ export default function Dashboard() {
 
   // Calculate stats - compare delivery_date strings directly
   const todayOrders = orders.filter(o => o.delivery_date === todayString);
-  const pendingOrders = orders.filter(o => o.status === 'pending');
-  const completedOrders = orders.filter(o => o.status === 'completed');
+  const deliveredToday = orders.filter(o => o.delivery_date === todayString && o.status === 'completed');
+  const pendingToday = orders.filter(o => o.delivery_date === todayString && o.status === 'pending');
+  const progressPercentage = todayOrders.length > 0 
+    ? Math.round((deliveredToday.length / todayOrders.length) * 100) 
+    : 0;
   const recentOrders = orders.slice(0, 5);
 
   const formatDeliveryDate = (date) => {

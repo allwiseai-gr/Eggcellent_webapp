@@ -43,12 +43,25 @@ export default function Orders() {
   const [showNewOrder, setShowNewOrder] = useState(false);
   const queryClient = useQueryClient();
 
-  // Check URL params for new order
+  // Check URL params for new order or filter
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('new') === 'true') {
       setShowNewOrder(true);
       window.history.replaceState({}, '', createPageUrl('Orders'));
+    }
+    
+    // Handle filter from dashboard
+    const filter = params.get('filter');
+    if (filter === 'today') {
+      setDateFilter('today');
+      setStatusFilter('all');
+    } else if (filter === 'today-delivered') {
+      setDateFilter('today');
+      setStatusFilter('completed');
+    } else if (filter === 'today-pending') {
+      setDateFilter('today');
+      setStatusFilter('pending');
     }
   }, []);
 
@@ -88,7 +101,7 @@ export default function Orders() {
     // Date filter logic
     let matchesDate = true;
     if (dateFilter === 'today') {
-      matchesDate = order.delivery_date === todayString && order.status === 'pending';
+      matchesDate = order.delivery_date === todayString;
     } else if (dateFilter === 'tomorrow') {
       matchesDate = order.delivery_date === tomorrowString && order.status === 'pending';
     }
