@@ -277,7 +277,7 @@ export default function Orders() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
-                        {order.status === 'pending' && (
+                        {order.status !== 'delivered' && (
                           <Button 
                             size="sm"
                             onClick={(e) => {

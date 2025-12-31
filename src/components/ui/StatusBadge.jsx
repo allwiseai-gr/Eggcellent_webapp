@@ -12,13 +12,16 @@ const statusLabels = {
 };
 
 export default function StatusBadge({ status, className }) {
+  // Treat any non-delivered status as "pending" (2-status model)
+  const normalizedStatus = status === 'delivered' ? 'delivered' : 'pending';
+  
   return (
     <span className={cn(
       "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border",
-      statusStyles[status] || statusStyles.pending,
+      statusStyles[normalizedStatus],
       className
     )}>
-      {statusLabels[status] || status}
+      {statusLabels[normalizedStatus]}
     </span>
   );
 }

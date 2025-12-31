@@ -67,10 +67,10 @@ export default function Dashboard() {
     return isToday && isDelivered;
   });
   
-  // Pending Orders = all orders that are NOT delivered/completed/cancelled
+  // Pending Orders = all orders that are NOT delivered (2-status model)
   const pendingOrders = orders.filter(o => {
     const status = o.status || 'pending';
-    return !['delivered', 'completed', 'cancelled'].includes(status);
+    return status !== 'delivered';
   });
   
   const recentOrders = orders.slice(0, 5);
