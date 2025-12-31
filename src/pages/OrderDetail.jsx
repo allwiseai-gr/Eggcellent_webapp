@@ -275,8 +275,8 @@ export default function OrderDetail() {
                   <Package className="w-5 h-5 text-slate-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-slate-900">{item.product_name || 'Product'}</p>
-                  <p className="text-sm text-slate-500">SKU: {item.product_sku || '—'}</p>
+                  <p className="font-medium text-slate-900">{item.product_name || item.sku}</p>
+                  {item.sku && <p className="text-sm text-slate-500">{item.sku}</p>}
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-slate-900">×{item.quantity}</p>

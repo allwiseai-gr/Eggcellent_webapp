@@ -43,6 +43,12 @@ Deno.serve(async (req) => {
     // Initialize Base44 client with service role
     const base44 = createClientFromRequest(req);
 
+    // SKU to name mapping
+    const skuToName = {
+      'EGGS_30': 'Αυγά 30άδα',
+      'EGGS_6': 'Αυγά 6άδα',
+    };
+
     // Parse request body
     const payload = await req.json();
     
@@ -135,6 +141,7 @@ Deno.serve(async (req) => {
       const orderItem = await base44.asServiceRole.entities.OrderItem.create({
         order_id: order.id,
         sku: item.sku,
+        product_name: skuToName[item.sku] || item.sku,
         quantity: item.qty,
       });
       createdItems.push(orderItem);
