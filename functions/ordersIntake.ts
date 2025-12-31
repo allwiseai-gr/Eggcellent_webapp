@@ -112,12 +112,15 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Normalize address from multiple possible sources
+    const address = payload.customer?.address || payload.delivery?.address || payload.address || null;
+
     // Create order
     const order = await base44.asServiceRole.entities.Order.create({
       source: payload.source || 'telegram',
       customer_name: payload.customer.full_name,
       customer_phone: payload.customer.phone,
-      customer_address: payload.customer.address,
+      customer_address: address,
       customer_zone: payload.customer.zone || null,
       delivery_date: payload.delivery.date,
       delivery_window: payload.delivery.window,
