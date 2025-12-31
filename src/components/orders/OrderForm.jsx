@@ -35,11 +35,6 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     notes: order?.notes || '',
   });
 
-  const [items, setItems] = useState(order?.items || [
-    { product_id: '', quantity: 1 },
-    { product_id: '', quantity: 1 }
-  ]);
-
   const { data: customers = [] } = useQuery({
     queryKey: ['customers'],
     queryFn: () => base44.entities.Customer.list('name'),
@@ -49,6 +44,28 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     queryKey: ['products'],
     queryFn: () => base44.entities.Product.filter({ active: true }),
   });
+
+  // Find 6-pack and 30-pack products
+  const product6 = products.find(p => p.sku === 'EGGS_6' || p.name?.includes('6'));
+  const product30 = products.find(p => p.sku === 'EGGS_30' || p.name?.includes('30'));
+
+  const [items, setItems] = useState(() => {
+    if (order?.items) return order.items;
+    return [
+      { product_id: product6?.id || '', quantity: 0 },
+      { product_id: product30?.id || '', quantity: 0 }
+    ];
+  });
+
+  // Update items when products load
+  React.useEffect(() => {
+    if (products.length > 0 && !order) {
+      setItems([
+        { product_id: product6?.id || '', quantity: 0 },
+        { product_id: product30?.id || '', quantity: 0 }
+      ]);
+    }
+  }, [products, product6?.id, product30?.id, order]);
 
   const handleCustomerChange = (customerId) => {
     const customer = customers.find(c => c.id === customerId);
@@ -60,23 +77,17 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     }));
   };
 
-  const handleAddItem = () => {
-    setItems(prev => [...prev, { product_id: '', quantity: 1 }]);
-  };
-
-  const handleRemoveItem = (index) => {
-    setItems(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleItemChange = (index, field, value) => {
+  const handleQuantityChange = (index, quantity) => {
     setItems(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
+      i === index ? { ...item, quantity: parseInt(quantity) || 0 } : item
     ));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...formData, items });
+    // Only include items with quantity > 0
+    const validItems = items.filter(item => item.quantity > 0 && item.product_id);
+    onSubmit({ ...formData, items: validItems });
   };
 
   return (
@@ -205,57 +216,41 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
 
       {/* Order Items */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Label>Items</Label>
-          <Button type="button" variant="outline" size="sm" onClick={handleAddItem}>
-            <Plus className="w-4 h-4 mr-1" />
-            Add Item
-          </Button>
-        </div>
+        <Label>Προϊόντα</Label>
         
-        {items.length === 0 ? (
-          <p className="text-sm text-slate-500 text-center py-4 bg-slate-50 rounded-lg">
-            No items added yet
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {items.map((item, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Select 
-                  value={item.product_id} 
-                  onValueChange={(v) => handleItemChange(index, 'product_id', v)}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Select product" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map(product => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name} ({product.sku})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                  className="w-20"
-                />
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => handleRemoveItem(index)}
-                  className="text-slate-400 hover:text-red-500"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
+        <div className="space-y-3 bg-slate-50 p-4 rounded-lg">
+          {/* 6-pack */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <p className="font-medium text-slate-900">{product6?.name || 'Αυγά 6τμχ'}</p>
+              <p className="text-xs text-slate-500">{product6?.sku}</p>
+            </div>
+            <Input
+              type="number"
+              min="0"
+              value={items[0]?.quantity || 0}
+              onChange={(e) => handleQuantityChange(0, e.target.value)}
+              className="w-24 text-center"
+              placeholder="0"
+            />
           </div>
-        )}
+
+          {/* 30-pack */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <p className="font-medium text-slate-900">{product30?.name || 'Αυγά 30τμχ'}</p>
+              <p className="text-xs text-slate-500">{product30?.sku}</p>
+            </div>
+            <Input
+              type="number"
+              min="0"
+              value={items[1]?.quantity || 0}
+              onChange={(e) => handleQuantityChange(1, e.target.value)}
+              className="w-24 text-center"
+              placeholder="0"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Notes */}
