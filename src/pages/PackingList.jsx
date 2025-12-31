@@ -24,7 +24,7 @@ export default function PackingList() {
   // Default to tomorrow
   const tomorrow = addDays(new Date(), 1);
   const [selectedDate, setSelectedDate] = useState(tomorrow);
-  const [showMorningOnly, setShowMorningOnly] = useState(true);
+  const [showMorningOnly, setShowMorningOnly] = useState(false);
   const queryClient = useQueryClient();
   
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
@@ -140,7 +140,7 @@ export default function PackingList() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Packing List</h1>
           <p className="text-slate-500 mt-1">
-            {getDateLabel()} {showMorningOnly ? 'Morning' : ''} • {orders.length} pending {orders.length === 1 ? 'order' : 'orders'}
+            {getDateLabel()} • What to load in the car
           </p>
         </div>
         <Button 
@@ -170,69 +170,83 @@ export default function PackingList() {
           </Button>
         </div>
         
-        <div className="flex items-center gap-2">
-          <Checkbox 
-            id="morning-only"
-            checked={showMorningOnly}
-            onCheckedChange={setShowMorningOnly}
-          />
-          <label 
-            htmlFor="morning-only" 
-            className="text-sm font-medium text-slate-700 cursor-pointer"
-          >
-            Morning Only
-          </label>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <Checkbox 
+              id="morning-only"
+              checked={showMorningOnly}
+              onCheckedChange={setShowMorningOnly}
+            />
+            <label 
+              htmlFor="morning-only" 
+              className="text-sm font-medium text-slate-700 cursor-pointer"
+            >
+              Morning deliveries only
+            </label>
+          </div>
+          <p className="text-xs text-slate-500 ml-6">Hide noon & evening deliveries</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Aggregated Items Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden sticky top-4">
-            <div className="px-6 py-4 border-b border-slate-100">
-              <h2 className="font-semibold text-slate-900">Items Summary</h2>
-              <p className="text-sm text-slate-500">Total items to pack</p>
-            </div>
-            
-            {isLoading ? (
-              <div className="p-6 space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 rounded-lg" />
-                ))}
-              </div>
-            ) : Object.keys(aggregatedItems).length === 0 ? (
-              <div className="p-6 text-center text-slate-500">
-                No items to pack
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {Object.entries(aggregatedItems).map(([key, item]) => (
-                  <div key={key} className="flex items-center justify-between px-6 py-3">
-                    <div>
-                      <p className="font-medium text-slate-900">{item.name}</p>
-                      <code className="text-xs text-slate-500">{item.sku}</code>
-                    </div>
-                    <span className="text-lg font-bold text-indigo-600">×{item.quantity}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+      <div className="space-y-6">
+        {/* Aggregated Items Summary - PRIMARY FOCUS */}
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 shadow-lg overflow-hidden">
+          <div className="px-6 py-5 border-b border-indigo-200 bg-white/50">
+            <h2 className="text-xl font-bold text-slate-900">📦 Load Checklist</h2>
+            <p className="text-sm text-slate-600 mt-1">What to pack in the car</p>
           </div>
+          
+          {isLoading ? (
+            <div className="p-6 space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-16 rounded-lg" />
+              ))}
+            </div>
+          ) : Object.keys(aggregatedItems).length === 0 ? (
+            <div className="p-8 text-center">
+              {orders.length === 0 ? (
+                <>
+                  <p className="text-slate-700 font-medium mb-1">No pending deliveries for this day</p>
+                  <p className="text-sm text-slate-500">Select a different date to see orders</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-slate-700 font-medium mb-1">Orders found, but no items added yet</p>
+                  <p className="text-sm text-slate-500">Add items to orders to generate a loading summary</p>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="p-4 space-y-2">
+              {Object.entries(aggregatedItems).map(([key, item]) => (
+                <div key={key} className="flex items-center justify-between px-4 py-3 bg-white rounded-xl shadow-sm">
+                  <div>
+                    <p className="font-semibold text-slate-900 text-lg">{item.name}</p>
+                    <code className="text-xs text-slate-500">{item.sku}</code>
+                  </div>
+                  <span className="text-3xl font-bold text-indigo-600">×{item.quantity}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Orders List */}
-        <div className="lg:col-span-2 space-y-4">
+        {/* Orders List - SECONDARY (verification) */}
+        <div className="space-y-4">
+
+          <div className="border-t-2 border-slate-200 pt-4">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 px-1">
+              Order Details (for verification)
+            </h3>
+          </div>
+
           {isLoading ? (
-            [...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-48 rounded-2xl" />
+            [...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-40 rounded-xl" />
             ))
           ) : sortedOrders.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm">
-              <EmptyState
-                icon={Package}
-                title="No orders for this day"
-                description="Select a different date to see orders"
-              />
+            <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-8 text-center">
+              <p className="text-slate-500">No orders to display</p>
             </div>
           ) : (
             sortedOrders.map((order) => {
@@ -242,7 +256,7 @@ export default function PackingList() {
               return (
                 <div 
                   key={order.id} 
-                  className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${
+                  className={`bg-white rounded-xl border shadow-sm overflow-hidden transition-all ${
                     isPacked ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200/60'
                   }`}
                 >
