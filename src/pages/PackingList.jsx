@@ -21,14 +21,49 @@ import DeliveryWindowBadge from '@/components/ui/DeliveryWindowBadge';
 import EmptyState from '@/components/ui/EmptyState';
 
 export default function PackingList() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // Default to tomorrow
+  const tomorrow = addDays(new Date(), 1);
+  const [selectedDate, setSelectedDate] = useState(tomorrow);
+  const [showMorningOnly, setShowMorningOnly] = useState(true);
   const queryClient = useQueryClient();
   
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
-  const { data: orders = [], isLoading: ordersLoading } = useQuery({
+  const { data: allOrders = [], isLoading: ordersLoading } = useQuery({
     queryKey: ['orders', dateStr],
-    queryFn: () => base44.entities.Order.filter({ delivery_date: dateStr }),
+    queryFn: async () => {
+      const now = new Date();
+      const startOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0, 0);
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+      
+      const allOrdersList = await base44.entities.Order.list('-delivery_date', 200);
+      return allOrdersList.filter(o => {
+        if (!o.delivery_date) return false;
+        const deliveryDate = new Date(o.delivery_date);
+        return deliveryDate >= startOfDay && deliveryDate < endOfDay;
+      });
+    },
+  });
+
+  // Filter orders: pending only + morning filter if enabled
+  const orders = allOrders.filter(order => {
+    // Only show pending orders (exclude delivered)
+    if (order.status === 'delivered') return false;
+    
+    // If morning filter is on, only show morning deliveries
+    if (showMorningOnly) {
+      if (order.delivery_window === 'morning') return true;
+      // If no delivery_window, check time in delivery_date
+      if (!order.delivery_window && order.delivery_date) {
+        const deliveryDate = new Date(order.delivery_date);
+        const hours = deliveryDate.getHours();
+        return hours >= 5 && hours < 12;
+      }
+      return false;
+    }
+    
+    return true;
   });
 
   const { data: allOrderItems = [], isLoading: itemsLoading } = useQuery({
@@ -104,7 +139,9 @@ export default function PackingList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Packing List</h1>
-          <p className="text-slate-500 mt-1">{orders.length} orders for {getDateLabel()}</p>
+          <p className="text-slate-500 mt-1">
+            {getDateLabel()} {showMorningOnly ? 'Morning' : ''} • {orders.length} pending {orders.length === 1 ? 'order' : 'orders'}
+          </p>
         </div>
         <Button 
           variant="outline"
@@ -117,19 +154,35 @@ export default function PackingList() {
       </div>
 
       {/* Date Navigation */}
-      <div className="flex items-center justify-center gap-4 mb-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 print:hidden">
-        <Button variant="ghost" size="icon" onClick={() => navigateDate(-1)}>
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
-        <div className="flex items-center gap-2 min-w-[180px] justify-center">
-          <Calendar className="w-5 h-5 text-slate-400" />
-          <span className="font-semibold text-slate-900">
-            {getDateLabel()} • {format(selectedDate, 'MMM d')}
-          </span>
+      <div className="flex items-center justify-between gap-4 mb-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 print:hidden">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigateDate(-1)}>
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+          <div className="flex items-center gap-2 min-w-[180px] justify-center">
+            <Calendar className="w-5 h-5 text-slate-400" />
+            <span className="font-semibold text-slate-900">
+              {getDateLabel()} • {format(selectedDate, 'MMM d')}
+            </span>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => navigateDate(1)}>
+            <ChevronRight className="w-5 h-5" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => navigateDate(1)}>
-          <ChevronRight className="w-5 h-5" />
-        </Button>
+        
+        <div className="flex items-center gap-2">
+          <Checkbox 
+            id="morning-only"
+            checked={showMorningOnly}
+            onCheckedChange={setShowMorningOnly}
+          />
+          <label 
+            htmlFor="morning-only" 
+            className="text-sm font-medium text-slate-700 cursor-pointer"
+          >
+            Morning Only
+          </label>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
