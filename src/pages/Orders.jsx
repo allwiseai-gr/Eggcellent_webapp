@@ -39,7 +39,7 @@ import OrderForm from '@/components/orders/OrderForm';
 export default function Orders() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('tomorrow');
+  const [dateFilter, setDateFilter] = useState('all');
   const [showNewOrder, setShowNewOrder] = useState(false);
   const queryClient = useQueryClient();
 
