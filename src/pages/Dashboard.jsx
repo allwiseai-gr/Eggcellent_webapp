@@ -46,10 +46,33 @@ export default function Dashboard() {
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   const tomorrowString = formatInTimeZone(tomorrowDate, TIMEZONE, 'yyyy-MM-dd');
 
-  // Calculate stats - compare delivery_date strings directly
-  const todayOrders = orders.filter(o => o.delivery_date === todayString);
-  const deliveredToday = orders.filter(o => o.delivery_date === todayString && o.status === 'delivered');
-  const pendingOrders = orders.filter(o => o.status === 'pending');
+  // Calculate start-of-day boundaries for filtering
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const startOfTomorrow = new Date(startOfToday);
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+  // Calculate stats using date range comparisons
+  const todayOrders = orders.filter(o => {
+    if (!o.delivery_date) return false;
+    const deliveryDate = new Date(o.delivery_date);
+    return deliveryDate >= startOfToday && deliveryDate < startOfTomorrow;
+  });
+  
+  const deliveredToday = orders.filter(o => {
+    if (!o.delivery_date) return false;
+    const deliveryDate = new Date(o.delivery_date);
+    const isToday = deliveryDate >= startOfToday && deliveryDate < startOfTomorrow;
+    const isDelivered = o.status === 'delivered' || o.status === 'completed';
+    return isToday && isDelivered;
+  });
+  
+  // Pending Orders = all orders that are NOT delivered/completed/cancelled
+  const pendingOrders = orders.filter(o => {
+    const status = o.status || 'pending';
+    return !['delivered', 'completed', 'cancelled'].includes(status);
+  });
+  
   const recentOrders = orders.slice(0, 5);
 
   const formatDeliveryDate = (date) => {
