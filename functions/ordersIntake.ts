@@ -80,6 +80,41 @@ Deno.serve(async (req) => {
         { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } }
       );
     }
+
+    // Validate delivery date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(payload.delivery.date)) {
+      return Response.json(
+        { error: 'Invalid delivery.date. Use YYYY-MM-DD.' },
+        { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } }
+      );
+    }
+
+    // Validate that it's a real date
+    const deliveryDate = new Date(payload.delivery.date + 'T00:00:00Z');
+    if (isNaN(deliveryDate.getTime())) {
+      return Response.json(
+        { error: 'Invalid delivery.date. Use YYYY-MM-DD.' },
+        { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } }
+      );
+    }
+
+    // Check that date is not in the past (Europe/Athens timezone)
+    const nowInAthens = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Athens' }));
+    const todayInAthens = new Date(nowInAthens.getFullYear(), nowInAthens.getMonth(), nowInAthens.getDate());
+    const deliveryDateParts = payload.delivery.date.split('-');
+    const deliveryDateInAthens = new Date(
+      parseInt(deliveryDateParts[0]),
+      parseInt(deliveryDateParts[1]) - 1,
+      parseInt(deliveryDateParts[2])
+    );
+    
+    if (deliveryDateInAthens < todayInAthens) {
+      return Response.json(
+        { error: 'Invalid delivery.date. Use YYYY-MM-DD.' },
+        { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } }
+      );
+    }
     
     if (!payload.delivery?.window) {
       return Response.json(
