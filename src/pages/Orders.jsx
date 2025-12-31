@@ -63,6 +63,13 @@ export default function Orders() {
     },
   });
 
+  const completeOrderMutation = useMutation({
+    mutationFn: (orderId) => base44.entities.Order.update(orderId, { status: 'completed' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = !search || 
         order.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -114,12 +121,8 @@ export default function Orders() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="new">New</SelectItem>
-            <SelectItem value="needs_confirmation">Needs Confirmation</SelectItem>
-            <SelectItem value="confirmed">Confirmed</SelectItem>
-            <SelectItem value="packed">Packed</SelectItem>
-            <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
-            <SelectItem value="delivered">Delivered</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
           </SelectContent>
         </Select>
@@ -156,7 +159,7 @@ export default function Orders() {
                   <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Delivery</th>
                   <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Source</th>
                   <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4"></th>
+                  <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -197,11 +200,26 @@ export default function Orders() {
                       <StatusBadge status={order.status} />
                     </td>
                     <td className="px-6 py-4">
-                      <Link to={createPageUrl('OrderDetail') + `?id=${order.id}`}>
-                        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-indigo-600">
-                          <ArrowRight className="w-4 h-4" />
-                        </Button>
-                      </Link>
+                      <div className="flex items-center justify-center gap-2">
+                        {order.status === 'pending' && (
+                          <Button 
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              completeOrderMutation.mutate(order.id);
+                            }}
+                            disabled={completeOrderMutation.isPending}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          >
+                            Complete
+                          </Button>
+                        )}
+                        <Link to={createPageUrl('OrderDetail') + `?id=${order.id}`}>
+                          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-indigo-600">
+                            <ArrowRight className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -49,8 +49,8 @@ export default function Dashboard() {
 
   // Calculate stats - compare delivery_date strings directly
   const todayOrders = orders.filter(o => o.delivery_date === todayString);
-  const pendingOrders = orders.filter(o => ['new', 'needs_confirmation', 'pending'].includes(o.status));
-  const inProgressOrders = orders.filter(o => ['confirmed', 'packed', 'out_for_delivery'].includes(o.status));
+  const pendingOrders = orders.filter(o => o.status === 'pending');
+  const completedOrders = orders.filter(o => o.status === 'completed');
   const recentOrders = orders.slice(0, 5);
 
   const formatDeliveryDate = (date) => {
@@ -88,13 +88,13 @@ export default function Dashboard() {
               title="Pending"
               value={pendingOrders.length}
               icon={AlertCircle}
-              subtitle="Need attention"
+              subtitle="To be delivered"
             />
             <StatCard
-              title="In Progress"
-              value={inProgressOrders.length}
-              icon={TrendingUp}
-              subtitle="Being processed"
+              title="Completed"
+              value={completedOrders.length}
+              icon={CheckCircle2}
+              subtitle="Successfully delivered"
             />
             <StatCard
               title="Customers"
