@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { format, isToday, isTomorrow, parseISO } from 'date-fns';
+import { format, parseISO, isAfter, isBefore, startOfDay } from 'date-fns';
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import {
   ShoppingCart,
   Users,
@@ -39,18 +40,24 @@ export default function Dashboard() {
 
   const isLoading = ordersLoading || customersLoading;
 
-  // Calculate stats
-  const todayOrders = orders.filter(o => o.delivery_date && isToday(parseISO(o.delivery_date)));
-  const pendingOrders = orders.filter(o => ['new', 'needs_confirmation'].includes(o.status));
+  // Get today's date in Europe/Athens timezone (business timezone)
+  const TIMEZONE = 'Europe/Athens';
+  const todayString = formatInTimeZone(new Date(), TIMEZONE, 'yyyy-MM-dd');
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowString = formatInTimeZone(tomorrowDate, TIMEZONE, 'yyyy-MM-dd');
+
+  // Calculate stats - compare delivery_date strings directly
+  const todayOrders = orders.filter(o => o.delivery_date === todayString);
+  const pendingOrders = orders.filter(o => ['new', 'needs_confirmation', 'pending'].includes(o.status));
   const inProgressOrders = orders.filter(o => ['confirmed', 'packed', 'out_for_delivery'].includes(o.status));
   const recentOrders = orders.slice(0, 5);
 
   const formatDeliveryDate = (date) => {
     if (!date) return '—';
-    const parsed = parseISO(date);
-    if (isToday(parsed)) return 'Today';
-    if (isTomorrow(parsed)) return 'Tomorrow';
-    return format(parsed, 'MMM d');
+    if (date === todayString) return 'Today';
+    if (date === tomorrowString) return 'Tomorrow';
+    return format(parseISO(date), 'MMM d');
   };
 
   return (
