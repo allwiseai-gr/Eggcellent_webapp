@@ -59,7 +59,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 <ShoppingCart className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold text-slate-900 tracking-tight">OrderFlow</span>
+              <span className="font-semibold text-slate-900 tracking-tight">Eggcellent</span>
             </div>
             <button 
               onClick={() => setSidebarOpen(false)}
@@ -142,7 +142,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 <ShoppingCart className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-semibold text-slate-900">OrderFlow</span>
+              <span className="font-semibold text-slate-900">Eggcellent</span>
             </div>
             <div className="w-10" />
           </div>
