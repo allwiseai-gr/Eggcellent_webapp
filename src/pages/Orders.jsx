@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format, parseISO, isToday, isTomorrow } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import {
   Plus,
   Search,
@@ -38,6 +39,7 @@ import OrderForm from '@/components/orders/OrderForm';
 export default function Orders() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('tomorrow');
   const [showNewOrder, setShowNewOrder] = useState(false);
   const queryClient = useQueryClient();
 
@@ -70,20 +72,35 @@ export default function Orders() {
     },
   });
 
+  // Calculate date strings in Europe/Athens timezone
+  const TIMEZONE = 'Europe/Athens';
+  const todayString = formatInTimeZone(new Date(), TIMEZONE, 'yyyy-MM-dd');
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowString = formatInTimeZone(tomorrowDate, TIMEZONE, 'yyyy-MM-dd');
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = !search || 
         order.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
         order.customer_address?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    
+    // Date filter logic
+    let matchesDate = true;
+    if (dateFilter === 'today') {
+      matchesDate = order.delivery_date === todayString && order.status === 'pending';
+    } else if (dateFilter === 'tomorrow') {
+      matchesDate = order.delivery_date === tomorrowString && order.status === 'pending';
+    }
+    
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   const formatDeliveryDate = (date) => {
     if (!date) return '—';
-    const parsed = parseISO(date);
-    if (isToday(parsed)) return 'Today';
-    if (isTomorrow(parsed)) return 'Tomorrow';
-    return format(parsed, 'MMM d, yyyy');
+    if (date === todayString) return 'Today';
+    if (date === tomorrowString) return 'Tomorrow';
+    return format(parseISO(date), 'MMM d, yyyy');
   };
 
   return (
@@ -100,6 +117,33 @@ export default function Orders() {
         >
           <Plus className="w-4 h-4 mr-2" />
           New Order
+        </Button>
+      </div>
+
+      {/* Quick Date Filters */}
+      <div className="flex gap-2 mb-4">
+        <Button
+          variant={dateFilter === 'today' ? 'default' : 'outline'}
+          onClick={() => setDateFilter('today')}
+          className={dateFilter === 'today' ? 'bg-indigo-600 hover:bg-indigo-700' : ''}
+        >
+          <Calendar className="w-4 h-4 mr-2" />
+          Today
+        </Button>
+        <Button
+          variant={dateFilter === 'tomorrow' ? 'default' : 'outline'}
+          onClick={() => setDateFilter('tomorrow')}
+          className={dateFilter === 'tomorrow' ? 'bg-indigo-600 hover:bg-indigo-700' : ''}
+        >
+          <Calendar className="w-4 h-4 mr-2" />
+          Tomorrow
+        </Button>
+        <Button
+          variant={dateFilter === 'all' ? 'default' : 'outline'}
+          onClick={() => setDateFilter('all')}
+          className={dateFilter === 'all' ? 'bg-indigo-600 hover:bg-indigo-700' : ''}
+        >
+          All
         </Button>
       </div>
 
