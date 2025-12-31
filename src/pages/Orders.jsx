@@ -88,12 +88,20 @@ export default function Orders() {
     },
   });
 
-  // Calculate date strings in Europe/Athens timezone
+  // Calculate date strings in Europe/Athens timezone for display
   const TIMEZONE = 'Europe/Athens';
   const todayString = formatInTimeZone(new Date(), TIMEZONE, 'yyyy-MM-dd');
   const tomorrowDate = new Date();
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   const tomorrowString = formatInTimeZone(tomorrowDate, TIMEZONE, 'yyyy-MM-dd');
+
+  // Calculate start-of-day boundaries for filtering
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const startOfTomorrow = new Date(startOfToday);
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+  const startOfDayAfterTomorrow = new Date(startOfTomorrow);
+  startOfDayAfterTomorrow.setDate(startOfDayAfterTomorrow.getDate() + 1);
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = !search || 
@@ -101,12 +109,21 @@ export default function Orders() {
         order.customer_address?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     
-    // Date filter logic
+    // Date filter logic using range comparisons
     let matchesDate = true;
-    if (dateFilter === 'today') {
-      matchesDate = order.delivery_date === todayString;
-    } else if (dateFilter === 'tomorrow') {
-      matchesDate = order.delivery_date === tomorrowString && order.status === 'pending';
+    if (dateFilter === 'today' || dateFilter === 'tomorrow') {
+      if (!order.delivery_date) {
+        matchesDate = false;
+      } else {
+        // Parse delivery_date (handles both "YYYY-MM-DD" and "YYYY-MM-DDTHH:mm:ss" formats)
+        const deliveryDate = new Date(order.delivery_date);
+        
+        if (dateFilter === 'today') {
+          matchesDate = deliveryDate >= startOfToday && deliveryDate < startOfTomorrow;
+        } else if (dateFilter === 'tomorrow') {
+          matchesDate = deliveryDate >= startOfTomorrow && deliveryDate < startOfDayAfterTomorrow;
+        }
+      }
     }
     
     return matchesSearch && matchesStatus && matchesDate;
