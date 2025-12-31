@@ -12,7 +12,6 @@ import {
   TrendingUp,
   Clock,
   CheckCircle2,
-  AlertCircle,
   ArrowRight,
   Truck
 } from 'lucide-react';
@@ -72,7 +71,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {isLoading ? (
           <>
             {[...Array(4)].map((_, i) => (
@@ -81,24 +80,30 @@ export default function Dashboard() {
           </>
         ) : (
           <>
-            <StatCard
-              title="Today's Orders"
-              value={todayOrders.length}
-              icon={Clock}
-              subtitle="Scheduled for today"
-            />
-            <StatCard
-              title="Pending"
-              value={pendingOrders.length}
-              icon={AlertCircle}
-              subtitle="To be delivered"
-            />
-            <StatCard
-              title="Completed"
-              value={completedOrders.length}
-              icon={CheckCircle2}
-              subtitle="Successfully delivered"
-            />
+            <Link to={createPageUrl('Orders') + '?filter=today'} className="block">
+              <StatCard
+                title="Today's Orders"
+                value={todayOrders.length}
+                icon={Clock}
+                subtitle="For delivery"
+              />
+            </Link>
+            <Link to={createPageUrl('Orders') + '?filter=today-delivered'} className="block">
+              <StatCard
+                title="Delivered Today"
+                value={deliveredToday.length}
+                icon={CheckCircle2}
+                subtitle="Completed"
+              />
+            </Link>
+            <Link to={createPageUrl('Orders') + '?filter=today-pending'} className="block">
+              <StatCard
+                title="Progress"
+                value={`${deliveredToday.length}/${todayOrders.length}`}
+                icon={TrendingUp}
+                subtitle={`${progressPercentage}% complete`}
+              />
+            </Link>
             <StatCard
               title="Customers"
               value={customers.length}
