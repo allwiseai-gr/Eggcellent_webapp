@@ -49,23 +49,20 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
   const product6 = products.find(p => p.sku === 'EGGS_6' || p.name?.includes('6'));
   const product30 = products.find(p => p.sku === 'EGGS_30' || p.name?.includes('30'));
 
-  const [items, setItems] = useState(() => {
-    if (order?.items) return order.items;
-    return [
-      { product_id: product6?.id || '', quantity: 0 },
-      { product_id: product30?.id || '', quantity: 0 }
-    ];
-  });
+  const [items, setItems] = useState([
+    { product_id: '', quantity: 0 },
+    { product_id: '', quantity: 0 }
+  ]);
 
   // Update items when products load
   React.useEffect(() => {
-    if (products.length > 0 && !order) {
-      setItems([
-        { product_id: product6?.id || '', quantity: 0 },
-        { product_id: product30?.id || '', quantity: 0 }
+    if (products.length > 0 && !order && product6 && product30) {
+      setItems(prev => [
+        { ...prev[0], product_id: product6.id },
+        { ...prev[1], product_id: product30.id }
       ]);
     }
-  }, [products, product6?.id, product30?.id, order]);
+  }, [products.length, product6?.id, product30?.id, order]);
 
   const handleCustomerChange = (customerId) => {
     const customer = customers.find(c => c.id === customerId);
