@@ -71,12 +71,34 @@ export default function Orders() {
   });
 
   const createOrderMutation = useMutation({
-    mutationFn: (data) => {
+    mutationFn: async (data) => {
       // Ensure status is always 'pending' for new orders
-      return base44.entities.Order.create({ ...data, status: 'pending' });
+      const { items, ...orderData } = data;
+      const newOrder = await base44.entities.Order.create({ ...orderData, status: 'pending' });
+      
+      // Create order items if any
+      if (items && items.length > 0) {
+        const { data: products } = await base44.entities.Product.list();
+        const itemsToCreate = items.map(item => {
+          const product = products.find(p => p.id === item.product_id);
+          return {
+            order_id: newOrder.id,
+            product_id: item.product_id,
+            product_name: product?.name || '',
+            sku: product?.sku || '',
+            quantity: item.quantity,
+            unit_price: product?.price || 0,
+            total_price: (product?.price || 0) * item.quantity,
+          };
+        });
+        await base44.entities.OrderItem.bulkCreate(itemsToCreate);
+      }
+      
+      return newOrder;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['orderItems'] });
       setShowNewOrder(false);
     },
   });

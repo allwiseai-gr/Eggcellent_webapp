@@ -35,7 +35,10 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     notes: order?.notes || '',
   });
 
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(order?.items || [
+    { product_id: '', quantity: 1 },
+    { product_id: '', quantity: 1 }
+  ]);
 
   const { data: customers = [] } = useQuery({
     queryKey: ['customers'],
