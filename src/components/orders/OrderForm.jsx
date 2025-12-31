@@ -30,7 +30,7 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     delivery_window: order?.delivery_window || '',
     payment_method: order?.payment_method || 'unknown',
     source: order?.source || 'manual',
-    status: order?.status || 'new',
+    status: order?.status || 'pending',
     address: order?.address || '',
     notes: order?.notes || '',
   });

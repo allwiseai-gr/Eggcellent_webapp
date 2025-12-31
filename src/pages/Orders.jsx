@@ -71,7 +71,10 @@ export default function Orders() {
   });
 
   const createOrderMutation = useMutation({
-    mutationFn: (data) => base44.entities.Order.create(data),
+    mutationFn: (data) => {
+      // Ensure status is always 'pending' for new orders
+      return base44.entities.Order.create({ ...data, status: 'pending' });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setShowNewOrder(false);
