@@ -48,11 +48,8 @@ export default function Dashboard() {
 
   // Calculate stats - compare delivery_date strings directly
   const todayOrders = orders.filter(o => o.delivery_date === todayString);
-  const deliveredToday = orders.filter(o => o.delivery_date === todayString && o.status === 'completed');
-  const pendingToday = orders.filter(o => o.delivery_date === todayString && o.status === 'pending');
-  const progressPercentage = todayOrders.length > 0 
-    ? Math.round((deliveredToday.length / todayOrders.length) * 100) 
-    : 0;
+  const deliveredToday = orders.filter(o => o.delivery_date === todayString && o.status === 'delivered');
+  const pendingOrders = orders.filter(o => o.status === 'pending');
   const recentOrders = orders.slice(0, 5);
 
   const formatDeliveryDate = (date) => {
@@ -91,19 +88,17 @@ export default function Dashboard() {
             <Link to={createPageUrl('Orders') + '?filter=today-delivered'} className="block">
               <StatCard
                 title="Delivered Today"
-                value={deliveredToday.length}
-                icon={CheckCircle2}
-                subtitle="Completed"
-              />
-            </Link>
-            <Link to={createPageUrl('Orders') + '?filter=today-pending'} className="block">
-              <StatCard
-                title="Progress"
                 value={`${deliveredToday.length}/${todayOrders.length}`}
-                icon={TrendingUp}
-                subtitle={`${progressPercentage}% complete`}
+                icon={CheckCircle2}
+                subtitle="Completed deliveries"
               />
             </Link>
+            <StatCard
+              title="Pending Orders"
+              value={pendingOrders.length}
+              icon={Package}
+              subtitle="To be delivered"
+            />
             <StatCard
               title="Customers"
               value={customers.length}

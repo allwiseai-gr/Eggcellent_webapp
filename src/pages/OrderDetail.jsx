@@ -15,7 +15,8 @@ import {
   Edit2,
   Trash2,
   Loader2,
-  Check
+  Check,
+  Truck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -43,7 +44,6 @@ import DeliveryWindowBadge from '@/components/ui/DeliveryWindowBadge';
 
 export default function OrderDetail() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState('');
   
@@ -144,36 +144,22 @@ export default function OrderDetail() {
         
         <div className="flex gap-3">
           {order.status === 'pending' && (
-            <>
-              <Button
-                onClick={() => handleStatusChange('completed')}
-                disabled={updateMutation.isPending}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                {updateMutation.isPending ? (
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                ) : (
-                  <Check className="w-5 h-5 mr-2" />
-                )}
-                Mark as Completed
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowCancelDialog(true)}
-                className="text-slate-600 hover:text-red-600 hover:border-red-300"
-              >
-                Cancel Order
-              </Button>
-            </>
+            <Button
+              onClick={() => handleStatusChange('delivered')}
+              disabled={updateMutation.isPending}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {updateMutation.isPending ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <Check className="w-5 h-5 mr-2" />
+              )}
+              Mark as Delivered
+            </Button>
           )}
-          {order.status === 'completed' && (
+          {order.status === 'delivered' && (
             <div className="flex-1 text-center py-2 text-emerald-700 font-medium">
-              ✓ Order completed
-            </div>
-          )}
-          {order.status === 'cancelled' && (
-            <div className="flex-1 text-center py-2 text-slate-500 font-medium">
-              Order cancelled
+              ✓ Order delivered
             </div>
           )}
         </div>
@@ -328,31 +314,6 @@ export default function OrderDetail() {
           </p>
         )}
       </div>
-
-      {/* Cancel Dialog */}
-      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Order</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to cancel this order?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>No, keep it</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                updateMutation.mutate({ status: 'cancelled' });
-                setShowCancelDialog(false);
-              }}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {updateMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Yes, cancel order
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Delete Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

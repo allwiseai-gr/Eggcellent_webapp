@@ -58,7 +58,7 @@ export default function Orders() {
       setStatusFilter('all');
     } else if (filter === 'today-delivered') {
       setDateFilter('today');
-      setStatusFilter('completed');
+      setStatusFilter('delivered');
     } else if (filter === 'today-pending') {
       setDateFilter('today');
       setStatusFilter('pending');
@@ -78,8 +78,8 @@ export default function Orders() {
     },
   });
 
-  const completeOrderMutation = useMutation({
-    mutationFn: (orderId) => base44.entities.Order.update(orderId, { status: 'completed' }),
+  const deliverOrderMutation = useMutation({
+    mutationFn: (orderId) => base44.entities.Order.update(orderId, { status: 'delivered' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
@@ -179,8 +179,7 @@ export default function Orders() {
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="delivered">Delivered</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -263,12 +262,12 @@ export default function Orders() {
                             size="sm"
                             onClick={(e) => {
                               e.preventDefault();
-                              completeOrderMutation.mutate(order.id);
+                              deliverOrderMutation.mutate(order.id);
                             }}
-                            disabled={completeOrderMutation.isPending}
+                            disabled={deliverOrderMutation.isPending}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
                           >
-                            Complete
+                            Delivered
                           </Button>
                         )}
                         <Link to={createPageUrl('OrderDetail') + `?id=${order.id}`}>
