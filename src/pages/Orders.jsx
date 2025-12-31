@@ -65,8 +65,8 @@ export default function Orders() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = !search || 
-      order.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
-      order.address?.toLowerCase().includes(search.toLowerCase());
+        order.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
+        order.customer_address?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -171,9 +171,9 @@ export default function Orders() {
                           <p className="font-medium text-slate-900">
                             {order.customer_name || 'Unknown'}
                           </p>
-                          {order.address && (
+                          {order.customer_address && (
                             <p className="text-sm text-slate-500 truncate max-w-[200px]">
-                              {order.address}
+                              {order.customer_address}
                             </p>
                           )}
                         </div>

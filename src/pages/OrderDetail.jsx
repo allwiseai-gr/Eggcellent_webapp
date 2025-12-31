@@ -218,7 +218,7 @@ export default function OrderDetail() {
             </div>
             <div>
               <p className="text-sm text-slate-500">Address</p>
-              <p className="font-medium text-slate-900">{order.address || '—'}</p>
+              <p className="font-medium text-slate-900">{order.customer_address || '—'}</p>
             </div>
           </div>
 
