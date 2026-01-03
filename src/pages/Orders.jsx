@@ -226,104 +226,83 @@ export default function Orders() {
         </Select>
       </div>
 
-      {/* Orders List */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+      {/* Orders List - Mobile Optimized Cards */}
+      <div className="space-y-3">
         {isLoading ? (
-          <div className="p-6 space-y-4">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-xl" />
-            ))}
-          </div>
+          [...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-32 rounded-xl" />
+          ))
         ) : filteredOrders.length === 0 ? (
-          <EmptyState
-            icon={ShoppingCart}
-            title="No orders found"
-            description={search || statusFilter !== 'all' ? "Try adjusting your filters" : "Create your first order to get started"}
-            action={
-              !search && statusFilter === 'all' && (
-                <Button onClick={() => setShowNewOrder(true)} className="bg-indigo-600 hover:bg-indigo-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Order
-                </Button>
-              )
-            }
-          />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px]">
-              <thead>
-                <tr className="border-b border-slate-100">
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer</th>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Delivery</th>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Source</th>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center shrink-0">
-                          <ShoppingCart className="w-5 h-5 text-indigo-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-900">
-                            {order.customer_name || 'Unknown'}
-                          </p>
-                          {order.customer_address && (
-                            <p className="text-sm text-slate-500 truncate max-w-[200px]">
-                              {order.customer_address}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-700">
-                          {formatDeliveryDate(order.delivery_date)}
-                        </span>
-                      </div>
-                      {order.delivery_window && (
-                        <DeliveryWindowBadge window={order.delivery_window} className="mt-1" />
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <SourceBadge source={order.source} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusBadge status={order.status} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        {order.status !== 'delivered' && (
-                          <Button 
-                            size="sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              deliverOrderMutation.mutate(order.id);
-                            }}
-                            disabled={deliverOrderMutation.isPending}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                          >
-                            Delivered
-                          </Button>
-                        )}
-                        <Link to={createPageUrl('OrderDetail') + `?id=${order.id}`}>
-                          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-indigo-600">
-                            <ArrowRight className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm">
+            <EmptyState
+              icon={ShoppingCart}
+              title="No orders found"
+              description={search || statusFilter !== 'all' ? "Try adjusting your filters" : "Create your first order to get started"}
+              action={
+                !search && statusFilter === 'all' && (
+                  <Button onClick={() => setShowNewOrder(true)} className="bg-indigo-600 hover:bg-indigo-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Order
+                  </Button>
+                )
+              }
+            />
           </div>
+        ) : (
+          filteredOrders.map((order) => (
+            <div 
+              key={order.id} 
+              className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden active:scale-[0.98] transition-transform"
+            >
+              <Link to={createPageUrl('OrderDetail') + `?id=${order.id}`} className="block p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-lg text-slate-900 truncate">
+                      {order.customer_name || 'Unknown'}
+                    </h3>
+                    {order.customer_address && (
+                      <p className="text-sm text-slate-500 truncate mt-0.5">
+                        {order.customer_address}
+                      </p>
+                    )}
+                  </div>
+                  <StatusBadge status={order.status} className="ml-2 shrink-0" />
+                </div>
+
+                <div className="flex items-center gap-4 text-sm mb-3">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    <span className="text-slate-700 font-medium">
+                      {formatDeliveryDate(order.delivery_date)}
+                    </span>
+                  </div>
+                  {order.delivery_window && (
+                    <DeliveryWindowBadge window={order.delivery_window} />
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <SourceBadge source={order.source} />
+                  <ArrowRight className="w-5 h-5 text-slate-400" />
+                </div>
+              </Link>
+
+              {order.status !== 'delivered' && (
+                <div className="px-4 pb-4">
+                  <Button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      deliverOrderMutation.mutate(order.id);
+                    }}
+                    disabled={deliverOrderMutation.isPending}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-base font-semibold"
+                  >
+                    ✓ Mark as Delivered
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))
         )}
       </div>
 

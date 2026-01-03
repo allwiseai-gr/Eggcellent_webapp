@@ -147,18 +147,18 @@ export default function OrderDetail() {
             <Button
               onClick={() => handleStatusChange('delivered')}
               disabled={updateMutation.isPending}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg font-semibold"
             >
               {updateMutation.isPending ? (
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                <Loader2 className="w-6 h-6 mr-2 animate-spin" />
               ) : (
-                <Check className="w-5 h-5 mr-2" />
+                <Check className="w-6 h-6 mr-2" />
               )}
               Mark as Delivered
             </Button>
           )}
           {order.status === 'delivered' && (
-            <div className="flex-1 text-center py-2 text-emerald-700 font-medium">
+            <div className="flex-1 text-center py-4 bg-emerald-50 rounded-xl text-emerald-700 font-semibold text-lg">
               ✓ Order delivered
             </div>
           )}
@@ -243,16 +243,16 @@ export default function OrderDetail() {
         ) : (
           <div className="space-y-3">
             {orderItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 border">
-                  <Package className="w-5 h-5 text-slate-400" />
+              <div key={item.id} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
+                <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center shrink-0 border">
+                  <Package className="w-6 h-6 text-slate-400" />
                 </div>
-                <div className="flex-1">
-                  <p className="font-medium text-slate-900">{item.product_name || item.sku}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-slate-900 text-lg">{item.product_name || item.sku}</p>
                   {item.sku && <p className="text-sm text-slate-500">{item.sku}</p>}
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold text-slate-900">×{item.quantity}</p>
+                <div className="text-right shrink-0">
+                  <p className="font-bold text-slate-900 text-2xl">×{item.quantity}</p>
                   {item.unit_price && (
                     <p className="text-sm text-slate-500">€{item.total_price?.toFixed(2)}</p>
                   )}
