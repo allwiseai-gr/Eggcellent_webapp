@@ -55,12 +55,16 @@ export default function Layout({ children, currentPageName }) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-            <div className="flex items-center gap-3">
+            <Link 
+              to={createPageUrl('Dashboard')} 
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              onClick={() => setSidebarOpen(false)}
+            >
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 <ShoppingCart className="w-4 h-4 text-white" />
               </div>
               <span className="font-semibold text-slate-900 tracking-tight">Eggcellent</span>
-            </div>
+            </Link>
             <button 
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
@@ -138,12 +142,12 @@ export default function Layout({ children, currentPageName }) {
             >
               <Menu className="w-5 h-5 text-slate-600" />
             </button>
-            <div className="flex items-center gap-2">
+            <Link to={createPageUrl('Dashboard')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 <ShoppingCart className="w-3.5 h-3.5 text-white" />
               </div>
               <span className="font-semibold text-slate-900">Eggcellent</span>
-            </div>
+            </Link>
             <div className="w-10" />
           </div>
         </header>
