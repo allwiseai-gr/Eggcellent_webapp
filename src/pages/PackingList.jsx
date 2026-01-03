@@ -154,37 +154,38 @@ export default function PackingList() {
       </div>
 
       {/* Date Navigation */}
-      <div className="flex items-center justify-between gap-4 mb-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 print:hidden">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigateDate(-1)}>
-            <ChevronLeft className="w-5 h-5" />
+      <div className="flex flex-col gap-4 mb-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 print:hidden">
+        <div className="flex items-center justify-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigateDate(-1)} className="h-12 w-12">
+            <ChevronLeft className="w-6 h-6" />
           </Button>
           <div className="flex items-center gap-2 min-w-[180px] justify-center">
             <Calendar className="w-5 h-5 text-slate-400" />
-            <span className="font-semibold text-slate-900">
+            <span className="font-semibold text-slate-900 text-lg">
               {getDateLabel()} • {format(selectedDate, 'MMM d')}
             </span>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => navigateDate(1)}>
-            <ChevronRight className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={() => navigateDate(1)} className="h-12 w-12">
+            <ChevronRight className="w-6 h-6" />
           </Button>
         </div>
         
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
+          <div className="flex items-center gap-3">
             <Checkbox 
               id="morning-only"
               checked={showMorningOnly}
               onCheckedChange={setShowMorningOnly}
+              className="h-5 w-5"
             />
             <label 
               htmlFor="morning-only" 
-              className="text-sm font-medium text-slate-700 cursor-pointer"
+              className="text-base font-medium text-slate-700 cursor-pointer"
             >
               Morning deliveries only
             </label>
           </div>
-          <p className="text-xs text-slate-500 ml-6">Hide noon & evening deliveries</p>
+          <p className="text-sm text-slate-500 ml-8">Hide noon & evening deliveries</p>
         </div>
       </div>
 
@@ -217,14 +218,14 @@ export default function PackingList() {
               )}
             </div>
           ) : (
-            <div className="p-4 space-y-2">
+            <div className="p-4 space-y-3">
               {Object.entries(aggregatedItems).map(([key, item]) => (
-                <div key={key} className="flex items-center justify-between px-4 py-3 bg-white rounded-xl shadow-sm">
+                <div key={key} className="flex items-center justify-between px-5 py-4 bg-white rounded-xl shadow-sm">
                   <div>
-                    <p className="font-semibold text-slate-900 text-lg">{item.name}</p>
-                    <code className="text-xs text-slate-500">{item.sku}</code>
+                    <p className="font-bold text-slate-900 text-xl">{item.name}</p>
+                    <code className="text-sm text-slate-500">{item.sku}</code>
                   </div>
-                  <span className="text-3xl font-bold text-indigo-600">×{item.quantity}</span>
+                  <span className="text-4xl font-bold text-indigo-600">×{item.quantity}</span>
                 </div>
               ))}
             </div>
@@ -255,35 +256,35 @@ export default function PackingList() {
               
               return (
                 <div 
-                  key={order.id} 
-                  className={`bg-white rounded-xl border shadow-sm overflow-hidden transition-all ${
-                    isPacked ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200/60'
-                  }`}
+                 key={order.id} 
+                 className={`bg-white rounded-xl border shadow-sm overflow-hidden transition-all ${
+                   isPacked ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200/60'
+                 }`}
                 >
-                  <div className="px-6 py-4 border-b border-slate-100 flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
+                 <div className="px-5 py-4 border-b border-slate-100 flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
                       <button
                         onClick={() => handleMarkPacked(order)}
                         disabled={isPacked || updateMutation.isPending}
-                        className="mt-0.5"
+                        className="mt-1 shrink-0"
                       >
                         {isPacked ? (
-                          <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                          <CheckCircle2 className="w-7 h-7 text-emerald-500" />
                         ) : (
-                          <Circle className="w-6 h-6 text-slate-300 hover:text-indigo-500 transition-colors" />
+                          <Circle className="w-7 h-7 text-slate-300 hover:text-indigo-500 transition-colors active:scale-95" />
                         )}
                       </button>
-                      <div>
-                        <h3 className={`font-semibold ${isPacked ? 'text-emerald-900' : 'text-slate-900'}`}>
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-bold text-lg ${isPacked ? 'text-emerald-900' : 'text-slate-900'}`}>
                           {order.customer_name || 'Unknown Customer'}
                         </h3>
-                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <div className="flex items-center gap-2 mt-2 flex-wrap">
                           {order.delivery_window && (
                             <DeliveryWindowBadge window={order.delivery_window} />
                           )}
                           {order.address && (
-                            <span className="text-sm text-slate-500 flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
+                            <span className="text-sm text-slate-600 flex items-center gap-1">
+                              <MapPin className="w-4 h-4" />
                               {order.address}
                             </span>
                           )}
@@ -293,23 +294,23 @@ export default function PackingList() {
                     <StatusBadge status={order.status} />
                   </div>
                   
-                  <div className="px-6 py-4">
+                  <div className="px-5 py-4">
                     {items.length === 0 ? (
                       <p className="text-slate-500 text-sm">No items</p>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {items.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                                <Package className="w-4 h-4 text-slate-500" />
+                          <div key={item.id} className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                <Package className="w-5 h-5 text-slate-500" />
                               </div>
-                              <div>
-                                <p className="font-medium text-slate-900">{item.product_name}</p>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-slate-900 text-base">{item.product_name}</p>
                                 <p className="text-xs text-slate-500">{item.product_sku}</p>
                               </div>
                             </div>
-                            <span className="font-semibold text-slate-900">×{item.quantity}</span>
+                            <span className="font-bold text-slate-900 text-2xl shrink-0 ml-4">×{item.quantity}</span>
                           </div>
                         ))}
                       </div>
