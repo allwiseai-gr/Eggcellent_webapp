@@ -1,10 +1,10 @@
-import CustomerDetail from './pages/CustomerDetail';
-import Customers from './pages/Customers';
-import Dashboard from './pages/Dashboard';
-import OrderDetail from './pages/OrderDetail';
-import Orders from './pages/Orders';
+import CustomerDetail from './pages/CustomerDetail.jsx';
+import Customers from './pages/Customers.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import OrderDetail from './pages/OrderDetail.jsx';
+import Orders from './pages/Orders.jsx';
 import PackingList from './pages/PackingList';
-import Products from './pages/Products';
+import Products from './pages/Products.jsx';
 import __Layout from './Layout.jsx';
 
 
