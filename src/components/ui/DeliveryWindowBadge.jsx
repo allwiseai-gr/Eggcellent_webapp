@@ -9,9 +9,9 @@ const windowStyles = {
 };
 
 const windowLabels = {
-  morning: "Morning",
-  noon: "Noon",
-  evening: "Evening",
+  morning: "Πρωί",
+  noon: "Μεσημέρι",
+  evening: "Βράδυ",
 };
 
 export default function DeliveryWindowBadge({ window, className }) {

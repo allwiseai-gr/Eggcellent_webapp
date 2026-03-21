@@ -7,8 +7,8 @@ const statusStyles = {
 };
 
 const statusLabels = {
-  pending: "Pending",
-  delivered: "Delivered",
+  pending: "Εκκρεμεί",
+  delivered: "Παραδόθηκε",
 };
 
 export default function StatusBadge({ status, className }) {

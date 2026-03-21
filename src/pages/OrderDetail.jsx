@@ -5,38 +5,15 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format, parseISO } from 'date-fns';
 import {
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  CreditCard,
-  MessageSquare,
-  User,
-  Package,
-  Edit2,
-  Trash2,
-  Loader2,
-  Check,
-  Truck
+  ArrowLeft, Calendar, MapPin, CreditCard, MessageSquare,
+  User, Package, Edit2, Trash2, Loader2, Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import StatusBadge from '@/components/ui/StatusBadge';
 import SourceBadge from '@/components/ui/SourceBadge';
@@ -74,18 +51,10 @@ export default function OrderDetail() {
 
   const deleteMutation = useMutation({
     mutationFn: () => base44.entities.Order.delete(orderId),
-    onSuccess: () => {
-      window.location.href = createPageUrl('Orders');
-    },
+    onSuccess: () => { window.location.href = createPageUrl('Orders'); },
   });
 
-  const handleStatusChange = (newStatus) => {
-    updateMutation.mutate({ status: newStatus });
-  };
-
-  const handleSaveNotes = () => {
-    updateMutation.mutate({ notes });
-  };
+  const paymentLabels = { cash: 'Μετρητά', card: 'Κάρτα', transfer: 'Μεταφορά', unknown: 'Άγνωστο' };
 
   if (isLoading) {
     return (
@@ -100,10 +69,8 @@ export default function OrderDetail() {
   if (!order) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto text-center py-16">
-        <p className="text-slate-500">Order not found</p>
-        <Link to={createPageUrl('Orders')}>
-          <Button className="mt-4">Back to Orders</Button>
-        </Link>
+        <p className="text-slate-500">Η παραγγελία δεν βρέθηκε</p>
+        <Link to={createPageUrl('Orders')}><Button className="mt-4">Πίσω</Button></Link>
       </div>
     );
   }
@@ -111,135 +78,64 @@ export default function OrderDetail() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-3 mb-5">
         <Link to={createPageUrl('Orders')}>
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+          <Button variant="ghost" size="icon" className="shrink-0 h-11 w-11"><ArrowLeft className="w-5 h-5" /></Button>
         </Link>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-slate-900">
-            {order.customer_name || 'Order Details'}
-          </h1>
-          <p className="text-slate-500 text-sm">
-            Created {format(parseISO(order.created_date), 'PPP')}
-          </p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl font-bold text-slate-900 truncate">{order.customer_name || 'Παραγγελία'}</h1>
+          <p className="text-slate-500 text-sm">{format(parseISO(order.created_date), 'dd MMM yyyy')}</p>
         </div>
-        <Button 
-          variant="outline" 
-          size="icon"
-          onClick={() => setShowDeleteDialog(true)}
-          className="text-red-500 hover:text-red-600 hover:bg-red-50"
-        >
+        <Button variant="outline" size="icon" onClick={() => setShowDeleteDialog(true)} className="text-red-500 hover:text-red-600 hover:bg-red-50 h-11 w-11">
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
 
-      {/* Status & Actions */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 mb-6">
+      {/* Status & Action */}
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-900">Status</h2>
+          <h2 className="font-semibold text-slate-900">Κατάσταση</h2>
           <StatusBadge status={order.status} />
         </div>
-        
-        <div className="flex gap-3">
-          {order.status === 'pending' && (
-            <Button
-              onClick={() => handleStatusChange('delivered')}
-              disabled={updateMutation.isPending}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg font-semibold"
-            >
-              {updateMutation.isPending ? (
-                <Loader2 className="w-6 h-6 mr-2 animate-spin" />
-              ) : (
-                <Check className="w-6 h-6 mr-2" />
-              )}
-              Mark as Delivered
-            </Button>
-          )}
-          {order.status === 'delivered' && (
-            <div className="flex-1 text-center py-4 bg-emerald-50 rounded-xl text-emerald-700 font-semibold text-lg">
-              ✓ Order delivered
-            </div>
-          )}
-        </div>
+        {order.status === 'pending' ? (
+          <Button
+            onClick={() => updateMutation.mutate({ status: 'delivered' })}
+            disabled={updateMutation.isPending}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg font-semibold"
+          >
+            {updateMutation.isPending ? <Loader2 className="w-6 h-6 mr-2 animate-spin" /> : <Check className="w-6 h-6 mr-2" />}
+            Παραδόθηκε
+          </Button>
+        ) : (
+          <div className="text-center py-4 bg-emerald-50 rounded-xl text-emerald-700 font-semibold text-lg">✓ Παραδόθηκε</div>
+        )}
       </div>
 
-      {/* Order Details */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 mb-6">
-        <h2 className="font-semibold text-slate-900 mb-4">Order Information</h2>
-        
+      {/* Info */}
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5 mb-4">
+        <h2 className="font-semibold text-slate-900 mb-4">Στοιχεία</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <Calendar className="w-5 h-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Delivery</p>
-              <p className="font-medium text-slate-900">
-                {order.delivery_date ? format(parseISO(order.delivery_date), 'PPP') : '—'}
-              </p>
-              {order.delivery_window && (
-                <DeliveryWindowBadge window={order.delivery_window} className="mt-1" />
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <MapPin className="w-5 h-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Address</p>
-              <p className="font-medium text-slate-900">{order.customer_address || '—'}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <CreditCard className="w-5 h-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Payment</p>
-              <p className="font-medium text-slate-900 capitalize">{order.payment_method || '—'}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <MessageSquare className="w-5 h-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Source</p>
-              <SourceBadge source={order.source} />
-            </div>
-          </div>
-
+          <InfoRow icon={Calendar} label="Παράδοση" value={order.delivery_date ? format(parseISO(order.delivery_date), 'dd MMM yyyy') : '—'} extra={order.delivery_window && <DeliveryWindowBadge window={order.delivery_window} className="mt-1" />} />
+          <InfoRow icon={MapPin} label="Διεύθυνση" value={order.customer_address || '—'} />
+          <InfoRow icon={CreditCard} label="Πληρωμή" value={paymentLabels[order.payment_method] || '—'} />
+          <InfoRow icon={MessageSquare} label="Πηγή" value={<SourceBadge source={order.source} />} />
           {order.customer_id && (
             <div className="flex items-start gap-3 sm:col-span-2">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                <User className="w-5 h-5 text-slate-600" />
-              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0"><User className="w-5 h-5 text-slate-600" /></div>
               <div>
-                <p className="text-sm text-slate-500">Customer</p>
-                <Link 
-                  to={createPageUrl('CustomerDetail') + `?id=${order.customer_id}`}
-                  className="font-medium text-indigo-600 hover:text-indigo-700"
-                >
-                  {order.customer_name || 'View Customer'}
-                </Link>
+                <p className="text-sm text-slate-500">Πελάτης</p>
+                <Link to={createPageUrl('CustomerDetail') + `?id=${order.customer_id}`} className="font-medium text-indigo-600">{order.customer_name || 'Προβολή'}</Link>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Order Items */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 mb-6">
-        <h2 className="font-semibold text-slate-900 mb-4">Items</h2>
-        
+      {/* Items */}
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5 mb-4">
+        <h2 className="font-semibold text-slate-900 mb-4">Προϊόντα</h2>
         {orderItems.length === 0 ? (
-          <p className="text-slate-500 text-center py-8">No items in this order</p>
+          <p className="text-slate-500 text-center py-6">Χωρίς προϊόντα</p>
         ) : (
           <div className="space-y-3">
             {orderItems.map((item) => (
@@ -249,13 +145,10 @@ export default function OrderDetail() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-900 text-lg">{item.product_name || item.sku}</p>
-                  {item.sku && <p className="text-sm text-slate-500">{item.sku}</p>}
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-bold text-slate-900 text-2xl">×{item.quantity}</p>
-                  {item.unit_price && (
-                    <p className="text-sm text-slate-500">€{item.total_price?.toFixed(2)}</p>
-                  )}
+                  {item.unit_price > 0 && <p className="text-sm text-slate-500">€{item.total_price?.toFixed(2)}</p>}
                 </div>
               </div>
             ))}
@@ -264,78 +157,59 @@ export default function OrderDetail() {
       </div>
 
       {/* Notes */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-900">Notes</h2>
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-slate-900">Σημειώσεις</h2>
           {!editingNotes && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => {
-                setNotes(order.notes || '');
-                setEditingNotes(true);
-              }}
-            >
-              <Edit2 className="w-4 h-4 mr-1" />
-              Edit
+            <Button variant="ghost" size="sm" onClick={() => { setNotes(order.delivery_notes || ''); setEditingNotes(true); }}>
+              <Edit2 className="w-4 h-4 mr-1" /> Επεξεργασία
             </Button>
           )}
         </div>
-        
         {editingNotes ? (
           <div className="space-y-3">
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add notes..."
-              rows={4}
-            />
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Σημειώσεις..." rows={4} />
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setEditingNotes(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSaveNotes}
-                disabled={updateMutation.isPending}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-              >
-                {updateMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Save
+              <Button variant="outline" onClick={() => setEditingNotes(false)} className="flex-1">Ακύρωση</Button>
+              <Button onClick={() => updateMutation.mutate({ delivery_notes: notes })} disabled={updateMutation.isPending} className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                {updateMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Αποθήκευση
               </Button>
             </div>
           </div>
         ) : (
-          <p className="text-slate-600 whitespace-pre-wrap">
-            {order.notes || 'No notes added'}
-          </p>
+          <p className="text-slate-600 whitespace-pre-wrap">{order.delivery_notes || 'Χωρίς σημειώσεις'}</p>
         )}
       </div>
 
-      {/* Delete Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Order</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this order? This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle>Διαγραφή Παραγγελίας</AlertDialogTitle>
+            <AlertDialogDescription>Είστε σίγουροι; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteMutation.mutate()}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleteMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Delete
+            <AlertDialogCancel>Ακύρωση</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteMutation.mutate()} className="bg-red-600 hover:bg-red-700">
+              {deleteMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Διαγραφή
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function InfoRow({ icon: Icon, label, value, extra }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+        <Icon className="w-5 h-5 text-slate-600" />
+      </div>
+      <div>
+        <p className="text-sm text-slate-500">{label}</p>
+        {typeof value === 'string' ? <p className="font-medium text-slate-900">{value}</p> : value}
+        {extra}
+      </div>
     </div>
   );
 }

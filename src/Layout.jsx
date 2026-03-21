@@ -18,11 +18,11 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', href: 'Dashboard', icon: LayoutDashboard },
-  { name: 'Orders', href: 'Orders', icon: ShoppingCart },
-  { name: 'Customers', href: 'Customers', icon: Users },
-  { name: 'Products', href: 'Products', icon: Package },
-  { name: 'Packing List', href: 'PackingList', icon: ClipboardList },
+  { name: 'Αρχική', href: 'Dashboard', icon: LayoutDashboard },
+  { name: 'Παραγγελίες', href: 'Orders', icon: ShoppingCart },
+  { name: 'Πελάτες', href: 'Customers', icon: Users },
+  { name: 'Προϊόντα', href: 'Products', icon: Package },
+  { name: 'Φόρτωση', href: 'PackingList', icon: ClipboardList },
 ];
 
 export default function Layout({ children, currentPageName }) {

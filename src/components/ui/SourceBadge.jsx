@@ -16,8 +16,8 @@ const sourceLabels = {
   viber: "Viber",
   whatsapp: "WhatsApp",
   telegram: "Telegram",
-  phone: "Phone",
-  manual: "Manual",
+  phone: "Τηλέφωνο",
+  manual: "Χειροκίνητα",
 };
 
 export default function SourceBadge({ source, className }) {

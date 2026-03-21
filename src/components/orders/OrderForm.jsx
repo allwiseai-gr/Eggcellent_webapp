@@ -7,19 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon, Plus, Trash2, Loader2 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
@@ -31,8 +23,8 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     payment_method: order?.payment_method || 'unknown',
     source: order?.source || 'manual',
     status: order?.status || 'pending',
-    address: order?.address || '',
-    notes: order?.notes || '',
+    customer_address: order?.customer_address || '',
+    delivery_notes: order?.delivery_notes || '',
   });
 
   const { data: customers = [] } = useQuery({
@@ -45,7 +37,6 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     queryFn: () => base44.entities.Product.filter({ active: true }),
   });
 
-  // Find 6-pack and 30-pack products
   const product6 = products.find(p => p.sku === 'EGGS_6' || p.name?.includes('6'));
   const product30 = products.find(p => p.sku === 'EGGS_30' || p.name?.includes('30'));
 
@@ -54,7 +45,6 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
     { product_id: '', quantity: 0 }
   ]);
 
-  // Update items when products load
   React.useEffect(() => {
     if (products.length > 0 && !order && product6 && product30) {
       setItems(prev => [
@@ -70,120 +60,74 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
       ...prev,
       customer_id: customerId,
       customer_name: customer?.name || '',
-      address: customer?.address || prev.address,
+      customer_address: customer?.address || prev.customer_address,
     }));
   };
 
   const handleQuantityChange = (index, quantity) => {
-    setItems(prev => prev.map((item, i) => 
-      i === index ? { ...item, quantity: parseInt(quantity) || 0 } : item
-    ));
+    setItems(prev => prev.map((item, i) => i === index ? { ...item, quantity: parseInt(quantity) || 0 } : item));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Only include items with quantity > 0
     const validItems = items.filter(item => item.quantity > 0 && item.product_id);
     onSubmit({ ...formData, items: validItems });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Customer */}
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label>Customer</Label>
-        <Select 
-          value={formData.customer_id} 
-          onValueChange={handleCustomerChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select customer" />
-          </SelectTrigger>
+        <Label>Πελάτης</Label>
+        <Select value={formData.customer_id} onValueChange={handleCustomerChange}>
+          <SelectTrigger className="h-11"><SelectValue placeholder="Επιλογή πελάτη" /></SelectTrigger>
           <SelectContent>
-            {customers.map(customer => (
-              <SelectItem key={customer.id} value={customer.id}>
-                {customer.name}
-              </SelectItem>
-            ))}
+            {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Delivery Date & Window */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label>Delivery Date</Label>
+          <Label>Ημερομηνία</Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !formData.delivery_date && "text-slate-500"
-                )}
-              >
+              <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11", !formData.delivery_date && "text-slate-500")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.delivery_date 
-                  ? format(new Date(formData.delivery_date), "PPP")
-                  : "Pick a date"
-                }
+                {formData.delivery_date ? format(new Date(formData.delivery_date), "dd/MM/yy") : "Επιλογή"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={formData.delivery_date ? new Date(formData.delivery_date) : undefined}
-                onSelect={(date) => setFormData(prev => ({
-                  ...prev,
-                  delivery_date: date ? format(date, 'yyyy-MM-dd') : ''
-                }))}
-              />
+              <Calendar mode="single" selected={formData.delivery_date ? new Date(formData.delivery_date) : undefined}
+                onSelect={(date) => setFormData(prev => ({ ...prev, delivery_date: date ? format(date, 'yyyy-MM-dd') : '' }))} />
             </PopoverContent>
           </Popover>
         </div>
-
         <div className="space-y-2">
-          <Label>Time Window</Label>
-          <Select 
-            value={formData.delivery_window} 
-            onValueChange={(v) => setFormData(prev => ({ ...prev, delivery_window: v }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select window" />
-            </SelectTrigger>
+          <Label>Ώρα</Label>
+          <Select value={formData.delivery_window} onValueChange={(v) => setFormData(prev => ({ ...prev, delivery_window: v }))}>
+            <SelectTrigger className="h-11"><SelectValue placeholder="Επιλογή" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="morning">Morning</SelectItem>
-              <SelectItem value="noon">Noon</SelectItem>
-              <SelectItem value="evening">Evening</SelectItem>
+              <SelectItem value="morning">Πρωί</SelectItem>
+              <SelectItem value="noon">Μεσημέρι</SelectItem>
+              <SelectItem value="evening">Βράδυ</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Address */}
       <div className="space-y-2">
-        <Label>Delivery Address</Label>
-        <Input
-          value={formData.address}
-          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-          placeholder="Enter address"
-        />
+        <Label>Διεύθυνση</Label>
+        <Input value={formData.customer_address} onChange={(e) => setFormData(prev => ({ ...prev, customer_address: e.target.value }))} placeholder="Διεύθυνση παράδοσης" className="h-11" />
       </div>
 
-      {/* Source & Payment */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label>Source</Label>
-          <Select 
-            value={formData.source} 
-            onValueChange={(v) => setFormData(prev => ({ ...prev, source: v }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+          <Label>Πηγή</Label>
+          <Select value={formData.source} onValueChange={(v) => setFormData(prev => ({ ...prev, source: v }))}>
+            <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="manual">Manual</SelectItem>
-              <SelectItem value="phone">Phone</SelectItem>
+              <SelectItem value="manual">Χειροκίνητα</SelectItem>
+              <SelectItem value="phone">Τηλέφωνο</SelectItem>
               <SelectItem value="messenger">Messenger</SelectItem>
               <SelectItem value="viber">Viber</SelectItem>
               <SelectItem value="whatsapp">WhatsApp</SelectItem>
@@ -191,88 +135,49 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
             </SelectContent>
           </Select>
         </div>
-
         <div className="space-y-2">
-          <Label>Payment</Label>
-          <Select 
-            value={formData.payment_method} 
-            onValueChange={(v) => setFormData(prev => ({ ...prev, payment_method: v }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+          <Label>Πληρωμή</Label>
+          <Select value={formData.payment_method} onValueChange={(v) => setFormData(prev => ({ ...prev, payment_method: v }))}>
+            <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="unknown">Unknown</SelectItem>
-              <SelectItem value="cash">Cash</SelectItem>
-              <SelectItem value="card">Card</SelectItem>
-              <SelectItem value="transfer">Transfer</SelectItem>
+              <SelectItem value="unknown">Άγνωστο</SelectItem>
+              <SelectItem value="cash">Μετρητά</SelectItem>
+              <SelectItem value="card">Κάρτα</SelectItem>
+              <SelectItem value="transfer">Μεταφορά</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Order Items */}
-      <div className="space-y-3">
+      {/* Products */}
+      <div className="space-y-2">
         <Label>Προϊόντα</Label>
-        
-        <div className="space-y-3 bg-slate-50 p-4 rounded-lg">
-          {/* 6-pack */}
+        <div className="space-y-3 bg-slate-50 p-4 rounded-xl">
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <p className="font-medium text-slate-900">{product6?.name || 'Αυγά 6τμχ'}</p>
-              <p className="text-xs text-slate-500">{product6?.sku}</p>
             </div>
-            <Input
-              type="number"
-              min="0"
-              value={items[0]?.quantity || 0}
-              onChange={(e) => handleQuantityChange(0, e.target.value)}
-              className="w-24 text-center"
-              placeholder="0"
-            />
+            <Input type="number" min="0" value={items[0]?.quantity || 0} onChange={(e) => handleQuantityChange(0, e.target.value)} className="w-24 text-center h-11 text-lg font-semibold" />
           </div>
-
-          {/* 30-pack */}
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <p className="font-medium text-slate-900">{product30?.name || 'Αυγά 30τμχ'}</p>
-              <p className="text-xs text-slate-500">{product30?.sku}</p>
             </div>
-            <Input
-              type="number"
-              min="0"
-              value={items[1]?.quantity || 0}
-              onChange={(e) => handleQuantityChange(1, e.target.value)}
-              className="w-24 text-center"
-              placeholder="0"
-            />
+            <Input type="number" min="0" value={items[1]?.quantity || 0} onChange={(e) => handleQuantityChange(1, e.target.value)} className="w-24 text-center h-11 text-lg font-semibold" />
           </div>
         </div>
       </div>
 
-      {/* Notes */}
       <div className="space-y-2">
-        <Label>Notes</Label>
-        <Textarea
-          value={formData.notes}
-          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-          placeholder="Any special instructions..."
-          rows={3}
-        />
+        <Label>Σημειώσεις</Label>
+        <Textarea value={formData.delivery_notes} onChange={(e) => setFormData(prev => ({ ...prev, delivery_notes: e.target.value }))} placeholder="Οδηγίες παράδοσης..." rows={3} />
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-          Cancel
-        </Button>
-        <Button 
-          type="submit" 
-          disabled={!formData.customer_id || isLoading}
-          className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-        >
+      <div className="flex gap-3 pt-2">
+        <Button type="button" variant="outline" onClick={onCancel} className="flex-1 h-12">Ακύρωση</Button>
+        <Button type="submit" disabled={!formData.customer_id || isLoading} className="flex-1 bg-indigo-600 hover:bg-indigo-700 h-12 text-base font-semibold">
           {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          {order ? 'Update Order' : 'Create Order'}
+          {order ? 'Ενημέρωση' : 'Δημιουργία'}
         </Button>
       </div>
     </form>
