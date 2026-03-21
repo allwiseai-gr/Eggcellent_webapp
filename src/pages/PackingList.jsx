@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { format, addDays, isToday, isTomorrow } from 'date-fns';
 import {
@@ -7,8 +7,6 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  CheckCircle2,
-  Circle,
   Printer,
   MapPin,
 } from 'lucide-react';
@@ -22,7 +20,6 @@ export default function PackingList() {
   const tomorrow = addDays(new Date(), 1);
   const [selectedDate, setSelectedDate] = useState(tomorrow);
   const [showMorningOnly, setShowMorningOnly] = useState(false);
-  const queryClient = useQueryClient();
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
   const { data: allOrders = [], isLoading: ordersLoading } = useQuery({
@@ -56,11 +53,6 @@ export default function PackingList() {
   const { data: allOrderItems = [], isLoading: itemsLoading } = useQuery({
     queryKey: ['allOrderItems'],
     queryFn: () => base44.entities.OrderItem.list(),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Order.update(id, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['orders'] }); },
   });
 
   const isLoading = ordersLoading || itemsLoading;
