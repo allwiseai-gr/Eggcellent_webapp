@@ -4,17 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format, parseISO } from 'date-fns';
-import {
-  ArrowLeft, Calendar, MapPin, CreditCard, MessageSquare,
-  User, Package, Edit2, Trash2, Loader2, Check
-} from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, CreditCard, MessageSquare, User, Package, Edit2, Trash2, Loader2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import StatusBadge from '@/components/ui/StatusBadge';
 import SourceBadge from '@/components/ui/SourceBadge';
 import DeliveryWindowBadge from '@/components/ui/DeliveryWindowBadge';
@@ -38,7 +32,7 @@ export default function OrderDetail() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState('');
-  
+
   const urlParams = new URLSearchParams(window.location.search);
   const orderId = urlParams.get('id');
   const queryClient = useQueryClient();
@@ -111,11 +105,7 @@ export default function OrderDetail() {
           <StatusBadge status={order.status} />
         </div>
         {order.status === 'pending' ? (
-          <Button
-            onClick={() => updateMutation.mutate({ status: 'delivered' })}
-            disabled={updateMutation.isPending}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg font-semibold"
-          >
+          <Button onClick={() => updateMutation.mutate({ status: 'delivered' })} disabled={updateMutation.isPending} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg font-semibold">
             {updateMutation.isPending ? <Loader2 className="w-6 h-6 mr-2 animate-spin" /> : <Check className="w-6 h-6 mr-2" />}
             Παραδόθηκε
           </Button>

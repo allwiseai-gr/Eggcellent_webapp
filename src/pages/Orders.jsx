@@ -5,15 +5,11 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import {
-  Plus, Search, ShoppingCart, Calendar,
-} from 'lucide-react';
+import { Plus, Search, ShoppingCart, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import StatusBadge from '@/components/ui/StatusBadge';
 import SourceBadge from '@/components/ui/SourceBadge';
@@ -90,17 +86,17 @@ export default function Orders() {
   startOfDayAfterTomorrow.setDate(startOfDayAfterTomorrow.getDate() + 1);
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = !search || 
-        order.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
-        order.customer_address?.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = !search ||
+      order.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
+      order.customer_address?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     let matchesDate = true;
     if (dateFilter === 'today' || dateFilter === 'tomorrow') {
       if (!order.delivery_date) { matchesDate = false; }
       else {
-        const deliveryDate = new Date(order.delivery_date);
-        if (dateFilter === 'today') matchesDate = deliveryDate >= startOfToday && deliveryDate < startOfTomorrow;
-        else matchesDate = deliveryDate >= startOfTomorrow && deliveryDate < startOfDayAfterTomorrow;
+        const d = new Date(order.delivery_date);
+        if (dateFilter === 'today') matchesDate = d >= startOfToday && d < startOfTomorrow;
+        else matchesDate = d >= startOfTomorrow && d < startOfDayAfterTomorrow;
       }
     }
     return matchesSearch && matchesStatus && matchesDate;
@@ -149,9 +145,7 @@ export default function Orders() {
           <Input placeholder="Αναζήτηση..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-11" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36 h-11">
-            <SelectValue placeholder="Κατάσταση" />
-          </SelectTrigger>
+          <SelectTrigger className="w-36 h-11"><SelectValue placeholder="Κατάσταση" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Όλες</SelectItem>
             <SelectItem value="pending">Εκκρεμείς</SelectItem>
@@ -199,7 +193,7 @@ export default function Orders() {
               {order.status !== 'delivered' && (
                 <div className="px-4 pb-4">
                   <Button
-                    onClick={(e) => { e.preventDefault(); deliverOrderMutation.mutate(order.id); }}
+                    onClick={() => deliverOrderMutation.mutate(order.id)}
                     disabled={deliverOrderMutation.isPending}
                     className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-base font-semibold"
                   >

@@ -25,13 +25,11 @@ export default function ProductForm({ product, onSubmit, onCancel, isLoading }) 
         <Label>Όνομα Προϊόντος *</Label>
         <Input value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder="π.χ. Αυγά 30τμχ" required className="h-11" />
       </div>
-
       <div className="space-y-2">
         <Label>Κωδικός (SKU) *</Label>
         <Input value={formData.sku} onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))} placeholder="π.χ. EGGS_30" required className="h-11" />
         <p className="text-xs text-slate-500">Μοναδικός κωδικός προϊόντος</p>
       </div>
-
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label>Μονάδα</Label>
@@ -42,7 +40,6 @@ export default function ProductForm({ product, onSubmit, onCancel, isLoading }) 
           <Input type="number" step="0.01" min="0" value={formData.price} onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))} placeholder="0.00" className="h-11" />
         </div>
       </div>
-
       <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
         <div>
           <Label className="text-base">Ενεργό</Label>
@@ -50,7 +47,6 @@ export default function ProductForm({ product, onSubmit, onCancel, isLoading }) 
         </div>
         <Switch checked={formData.active} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))} />
       </div>
-
       <div className="flex gap-3 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} className="flex-1 h-12">Ακύρωση</Button>
         <Button type="submit" disabled={!formData.name || !formData.sku || isLoading} className="flex-1 bg-indigo-600 hover:bg-indigo-700 h-12 text-base font-semibold">

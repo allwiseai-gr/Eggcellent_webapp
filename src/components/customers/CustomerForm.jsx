@@ -29,22 +29,18 @@ export default function CustomerForm({ customer, onSubmit, onCancel, isLoading }
         <Label>Όνομα *</Label>
         <Input value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder="Ονοματεπώνυμο" required className="h-11" />
       </div>
-
       <div className="space-y-2">
         <Label>Τηλέφωνο</Label>
         <Input value={formData.phone} onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))} placeholder="+30 6XX XXX XXXX" className="h-11" />
       </div>
-
       <div className="space-y-2">
         <Label>Διεύθυνση</Label>
         <Input value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))} placeholder="Διεύθυνση παράδοσης" className="h-11" />
       </div>
-
       <div className="space-y-2">
         <Label>Ζώνη / Περιοχή</Label>
         <Input value={formData.zone} onChange={(e) => setFormData(prev => ({ ...prev, zone: e.target.value }))} placeholder="Περιοχή παράδοσης" className="h-11" />
       </div>
-
       <div className="space-y-3">
         <h3 className="text-sm font-medium text-slate-700 border-b pb-2">Κανάλια Επικοινωνίας</h3>
         <div className="grid grid-cols-2 gap-3">
@@ -66,12 +62,10 @@ export default function CustomerForm({ customer, onSubmit, onCancel, isLoading }
           </div>
         </div>
       </div>
-
       <div className="space-y-2">
         <Label>Σημειώσεις</Label>
         <Textarea value={formData.notes} onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} placeholder="Επιπλέον σημειώσεις..." rows={3} />
       </div>
-
       <div className="flex gap-3 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} className="flex-1 h-12">Ακύρωση</Button>
         <Button type="submit" disabled={!formData.name || isLoading} className="flex-1 bg-indigo-600 hover:bg-indigo-700 h-12 text-base font-semibold">

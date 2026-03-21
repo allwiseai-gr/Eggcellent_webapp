@@ -5,16 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import {
-  ShoppingCart,
-  Users,
-  Package,
-  Clock,
-  CheckCircle2,
-  ArrowRight,
-  Truck,
-  Plus
-} from 'lucide-react';
+import { ShoppingCart, Users, Package, Clock, CheckCircle2, ArrowRight, Truck, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import StatCard from '@/components/ui/StatCard';
@@ -52,17 +43,11 @@ export default function Dashboard() {
 
   const todayOrders = orders.filter(o => {
     if (!o.delivery_date) return false;
-    const deliveryDate = new Date(o.delivery_date);
-    return deliveryDate >= startOfToday && deliveryDate < startOfTomorrow;
+    const d = new Date(o.delivery_date);
+    return d >= startOfToday && d < startOfTomorrow;
   });
-  
-  const deliveredToday = orders.filter(o => {
-    if (!o.delivery_date) return false;
-    const deliveryDate = new Date(o.delivery_date);
-    const isToday = deliveryDate >= startOfToday && deliveryDate < startOfTomorrow;
-    return isToday && o.status === 'delivered';
-  });
-  
+
+  const deliveredToday = todayOrders.filter(o => o.status === 'delivered');
   const pendingOrders = orders.filter(o => (o.status || 'pending') !== 'delivered');
   const recentOrders = orders.slice(0, 5);
 
@@ -154,9 +139,7 @@ export default function Dashboard() {
                 className="flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors active:bg-slate-100"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-900 truncate">
-                    {order.customer_name || 'Άγνωστος'}
-                  </p>
+                  <p className="font-semibold text-slate-900 truncate">{order.customer_name || 'Άγνωστος'}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-sm text-slate-500">{formatDeliveryDate(order.delivery_date)}</span>
                     {order.delivery_window && <DeliveryWindowBadge window={order.delivery_window} />}

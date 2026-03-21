@@ -7,10 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import EmptyState from '@/components/ui/EmptyState';
 import ProductForm from '@/components/products/ProductForm';
 
@@ -40,10 +37,6 @@ export default function Products() {
     mutationFn: (id) => base44.entities.Product.delete(id),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['allProducts'] }); setDeletingProduct(null); },
   });
-
-  const handleToggleActive = async (product) => {
-    await updateMutation.mutateAsync({ id: product.id, data: { active: !product.active } });
-  };
 
   const filteredProducts = products.filter(p => {
     if (!search) return true;
@@ -99,7 +92,7 @@ export default function Products() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Switch checked={product.active !== false} onCheckedChange={() => handleToggleActive(product)} />
+                  <Switch checked={product.active !== false} onCheckedChange={() => updateMutation.mutate({ id: product.id, data: { active: !product.active } })} />
                   <Button variant="ghost" size="icon" onClick={() => setEditingProduct(product)} className="text-slate-400 hover:text-indigo-600 h-10 w-10">
                     <Edit2 className="w-4 h-4" />
                   </Button>

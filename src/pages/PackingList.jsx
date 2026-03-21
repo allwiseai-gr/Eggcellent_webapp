@@ -2,14 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { format, addDays, isToday, isTomorrow } from 'date-fns';
-import {
-  Package,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Printer,
-  MapPin,
-} from 'lucide-react';
+import { Package, Calendar, ChevronLeft, ChevronRight, Printer, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -39,14 +32,7 @@ export default function PackingList() {
 
   const orders = allOrders.filter(order => {
     if (order.status === 'delivered') return false;
-    if (showMorningOnly) {
-      if (order.delivery_window === 'morning') return true;
-      if (!order.delivery_window && order.delivery_date) {
-        const hours = new Date(order.delivery_date).getHours();
-        return hours >= 5 && hours < 12;
-      }
-      return false;
-    }
+    if (showMorningOnly) return order.delivery_window === 'morning';
     return true;
   });
 
@@ -84,7 +70,6 @@ export default function PackingList() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex items-center justify-between gap-4 mb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Φόρτωση</h1>
@@ -95,7 +80,6 @@ export default function PackingList() {
         </Button>
       </div>
 
-      {/* Date Nav */}
       <div className="flex flex-col gap-3 mb-5 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 print:hidden">
         <div className="flex items-center justify-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigateDate(-1)} className="h-12 w-12">
@@ -118,28 +102,17 @@ export default function PackingList() {
       </div>
 
       <div className="space-y-5">
-        {/* Summary */}
         <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 shadow-lg overflow-hidden">
           <div className="px-5 py-4 border-b border-indigo-200 bg-white/50">
             <h2 className="text-xl font-bold text-slate-900">📦 Λίστα Φόρτωσης</h2>
             <p className="text-sm text-slate-600 mt-0.5">Τι πρέπει να μπει στο αυτοκίνητο</p>
           </div>
-          
           {isLoading ? (
             <div className="p-5 space-y-3">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 rounded-lg" />)}</div>
           ) : Object.keys(aggregatedItems).length === 0 ? (
             <div className="p-8 text-center">
-              {orders.length === 0 ? (
-                <>
-                  <p className="text-slate-700 font-medium mb-1">Δεν υπάρχουν εκκρεμείς παραδόσεις</p>
-                  <p className="text-sm text-slate-500">Επιλέξτε άλλη ημερομηνία</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-slate-700 font-medium mb-1">Υπάρχουν παραγγελίες χωρίς προϊόντα</p>
-                  <p className="text-sm text-slate-500">Προσθέστε προϊόντα στις παραγγελίες</p>
-                </>
-              )}
+              <p className="text-slate-700 font-medium mb-1">{orders.length === 0 ? 'Δεν υπάρχουν εκκρεμείς παραδόσεις' : 'Υπάρχουν παραγγελίες χωρίς προϊόντα'}</p>
+              <p className="text-sm text-slate-500">{orders.length === 0 ? 'Επιλέξτε άλλη ημερομηνία' : 'Προσθέστε προϊόντα στις παραγγελίες'}</p>
             </div>
           ) : (
             <div className="p-4 space-y-3">
@@ -156,14 +129,10 @@ export default function PackingList() {
           )}
         </div>
 
-        {/* Order Details */}
         <div className="space-y-3">
           <div className="border-t-2 border-slate-200 pt-3">
-            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 px-1">
-              Αναλυτικά ανά παραγγελία
-            </h3>
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 px-1">Αναλυτικά ανά παραγγελία</h3>
           </div>
-
           {isLoading ? (
             [...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)
           ) : sortedOrders.length === 0 ? (
@@ -189,7 +158,6 @@ export default function PackingList() {
                     </div>
                     <StatusBadge status={order.status} />
                   </div>
-                  
                   <div className="px-5 py-4">
                     {items.length === 0 ? (
                       <p className="text-slate-500 text-sm">Χωρίς προϊόντα</p>

@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Loader2 } from 'lucide-react';
@@ -42,14 +40,14 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading }) {
 
   const [items, setItems] = useState([
     { product_id: '', quantity: 0 },
-    { product_id: '', quantity: 0 }
+    { product_id: '', quantity: 0 },
   ]);
 
   useEffect(() => {
     if (products.length > 0 && !order && product6 && product30) {
-      setItems(prev => [
-        { ...prev[0], product_id: product6.id },
-        { ...prev[1], product_id: product30.id }
+      setItems([
+        { product_id: product6.id, quantity: 0 },
+        { product_id: product30.id, quantity: 0 },
       ]);
     }
   }, [products.length, product6?.id, product30?.id, order]);
