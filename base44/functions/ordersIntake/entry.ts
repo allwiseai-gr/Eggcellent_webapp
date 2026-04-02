@@ -159,6 +159,7 @@ Deno.serve(async (req) => {
     // Create order
     const order = await base44.asServiceRole.entities.Order.create({
       source: payload.source || 'telegram',
+      customer_id: payload.customer?.customer_id || null,
       customer_name: payload.customer.full_name,
       customer_phone: payload.customer.phone,
       customer_address: address,
