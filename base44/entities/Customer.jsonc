@@ -1,0 +1,49 @@
+{
+  "name": "Customer",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Customer's full name"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Primary phone number"
+    },
+    "address": {
+      "type": "string",
+      "description": "Delivery address"
+    },
+    "afm": {
+      "type": "string",
+      "description": "Greek tax number (\u0391\u03a6\u039c)"
+    },
+    "zone": {
+      "type": "string",
+      "description": "Delivery zone/area"
+    },
+    "messenger_id": {
+      "type": "string",
+      "description": "Facebook Messenger ID"
+    },
+    "viber_id": {
+      "type": "string",
+      "description": "Viber ID"
+    },
+    "whatsapp_id": {
+      "type": "string",
+      "description": "WhatsApp ID"
+    },
+    "telegram_id": {
+      "type": "string",
+      "description": "Telegram ID"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the customer"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
