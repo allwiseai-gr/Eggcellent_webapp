@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import {
   LayoutDashboard,
+  BarChart2,
   ShoppingCart,
   Users,
   Package,
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Πελάτες', href: 'Customers', icon: Users },
   { name: 'Προϊόντα', href: 'Products', icon: Package },
   { name: 'Φόρτωση', href: 'PackingList', icon: ClipboardList },
+  { name: 'Αναφορές', href: 'Reports', icon: BarChart2 },
 ];
 
 export default function Layout({ children, currentPageName }) {
