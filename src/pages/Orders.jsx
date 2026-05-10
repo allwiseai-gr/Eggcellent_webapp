@@ -7,6 +7,7 @@ import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Plus, Search, ShoppingCart, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -172,7 +173,7 @@ export default function Orders() {
           </div>
         ) : (
           filteredOrders.map((order) => (
-            <div key={order.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden active:scale-[0.98] transition-transform">
+            <div key={order.id} className={cn("bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden active:scale-[0.98] transition-transform border-l-4", order.status === 'delivered' ? "border-l-emerald-500" : "border-l-amber-400")}>
               <Link to={createPageUrl('OrderDetail') + `?id=${order.id}`} className="block p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">
