@@ -47,9 +47,9 @@ export default function PackingList() {
   const aggregatedItems = {};
   orders.forEach(order => {
     getOrderItems(order.id).forEach(item => {
-      const key = item.product_sku || item.product_id;
+      const key = item.sku || item.product_id;
       if (!aggregatedItems[key]) {
-        aggregatedItems[key] = { name: item.product_name, sku: item.product_sku, quantity: 0 };
+        aggregatedItems[key] = { name: item.product_name, sku: item.sku, quantity: 0 };
       }
       aggregatedItems[key].quantity += item.quantity;
     });
