@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import { ShoppingCart, Users, Package, Clock, CheckCircle2, ArrowRight, Truck, Plus } from 'lucide-react';
+import { ShoppingCart, Users, Package, ArrowRight, Truck, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import StatCard from '@/components/ui/StatCard';
+import FeaturedStatCard from '@/components/ui/FeaturedStatCard';
 import StatusBadge from '@/components/ui/StatusBadge';
 import DeliveryWindowBadge from '@/components/ui/DeliveryWindowBadge';
 
@@ -58,6 +59,13 @@ export default function Dashboard() {
     return format(parseISO(date), 'dd MMM');
   };
 
+  const quickActions = [
+    { to: createPageUrl('Orders') + '?new=true', label: 'Νέα Παραγγελία', icon: Plus, iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
+    { to: createPageUrl('Customers') + '?new=true', label: 'Νέος Πελάτης', icon: Users, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
+    { to: createPageUrl('PackingList'), label: 'Φόρτωση', icon: Package, iconBg: 'bg-slate-100', iconColor: 'text-slate-600' },
+    { to: createPageUrl('Products'), label: 'Προϊόντα', icon: Truck, iconBg: 'bg-orange-100', iconColor: 'text-orange-600' },
+  ];
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="mb-6">
@@ -65,55 +73,47 @@ export default function Dashboard() {
         <p className="text-slate-500 mt-1">Επισκόπηση παραγγελιών</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        {isLoading ? (
-          [...Array(4)].map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)
-        ) : (
-          <>
-            <Link to={createPageUrl('Orders') + '?filter=today'}>
-              <StatCard title="Σημερινές" value={todayOrders.length} icon={Clock} subtitle="Παραδόσεις" color="amber" />
-              </Link>
-              <Link to={createPageUrl('Orders') + '?filter=today-delivered'}>
-              <StatCard title="Παραδόθηκαν" value={`${deliveredToday.length}/${todayOrders.length}`} icon={CheckCircle2} subtitle="Σήμερα" color="emerald" />
-              </Link>
-              <StatCard title="Εκκρεμείς" value={pendingOrders.length} icon={Package} subtitle="Παραγγελίες" color="orange" />
-              <StatCard title="Πελάτες" value={customers.length} icon={Users} subtitle={`${products.length} προϊόντα`} color="violet" />
-          </>
-        )}
+      {isLoading ? (
+        <div className="space-y-3 mb-6">
+          <Skeleton className="h-28 rounded-2xl" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-3 mb-6">
+          <Link to={createPageUrl('Orders') + '?filter=today'} className="block">
+            <FeaturedStatCard title="Σημερινές" value={todayOrders.length} subtitle="Παραδόσεις σήμερα" />
+          </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Link to={createPageUrl('Orders') + '?filter=today-delivered'}>
+              <StatCard title="Παραδόθηκαν" value={`${deliveredToday.length}/${todayOrders.length}`} subtitle="Σήμερα" />
+            </Link>
+            <StatCard title="Εκκρεμείς" value={pendingOrders.length} subtitle="Παραγγελίες" />
+            <StatCard title="Πελάτες" value={customers.length} subtitle={`${products.length} προϊόντα`} />
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2 mb-6">
+        {quickActions.map((action) => (
+          <Link key={action.label} to={action.to}>
+            <div className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:bg-slate-50 transition-colors">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${action.iconBg}`}>
+                <action.icon className={`w-4 h-4 ${action.iconColor}`} />
+              </div>
+              <span className="flex-1 text-sm font-medium text-slate-900">{action.label}</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+            </div>
+          </Link>
+        ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <Link to={createPageUrl('Orders') + '?new=true'}>
-          <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700">
-            <Plus className="w-5 h-5" />
-            <span className="text-sm font-medium">Νέα Παραγγελία</span>
-          </Button>
-        </Link>
-        <Link to={createPageUrl('Customers') + '?new=true'}>
-          <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700">
-            <Users className="w-5 h-5" />
-            <span className="text-sm font-medium">Νέος Πελάτης</span>
-          </Button>
-        </Link>
-        <Link to={createPageUrl('PackingList')}>
-          <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700">
-            <Package className="w-5 h-5" />
-            <span className="text-sm font-medium">Φόρτωση</span>
-          </Button>
-        </Link>
-        <Link to={createPageUrl('Products')}>
-          <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-700">
-            <Truck className="w-5 h-5" />
-            <span className="text-sm font-medium">Προϊόντα</span>
-          </Button>
-        </Link>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <h2 className="font-semibold text-slate-900">Πρόσφατες Παραγγελίες</h2>
           <Link to={createPageUrl('Orders')}>
-            <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
+            <Button variant="ghost" size="sm" className="text-amber-600 hover:text-amber-700 hover:bg-amber-50">
               Όλες <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </Link>

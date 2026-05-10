@@ -117,7 +117,7 @@ export default function Orders() {
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Παραγγελίες</h1>
           <p className="text-slate-500 text-sm mt-0.5">{orders.length} συνολικά</p>
         </div>
-        <Button onClick={() => setShowNewOrder(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm h-11">
+        <Button onClick={() => setShowNewOrder(true)} className="bg-amber-500 hover:bg-amber-600 text-white shadow-sm h-11">
           <Plus className="w-5 h-5 mr-1.5" /> Νέα
         </Button>
       </div>
@@ -132,7 +132,7 @@ export default function Orders() {
             key={f.key}
             variant={dateFilter === f.key ? 'default' : 'outline'}
             onClick={() => setDateFilter(f.key)}
-            className={`shrink-0 h-10 ${dateFilter === f.key ? 'bg-indigo-600 hover:bg-indigo-700' : ''}`}
+            className={`shrink-0 h-10 ${dateFilter === f.key ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
           >
             {f.key !== 'all' && <Calendar className="w-4 h-4 mr-1.5" />}
             {f.label}

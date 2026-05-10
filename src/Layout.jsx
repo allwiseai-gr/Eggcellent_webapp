@@ -65,7 +65,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                 <ShoppingCart className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold text-slate-900 tracking-tight">Eggcellent</span>
+              <span className="text-lg font-bold text-slate-900 tracking-tight">Eggcellent</span>
             </Link>
             <button 
               onClick={() => setSidebarOpen(false)}
@@ -76,32 +76,32 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const isActive = currentPageName === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={createPageUrl(item.href)}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-                    isActive 
-                      ? "bg-indigo-50 text-indigo-700" 
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  )}
-                >
-                  <item.icon className={cn(
-                    "w-5 h-5 transition-colors",
-                    isActive ? "text-indigo-600" : "text-slate-400"
-                  )} />
-                  {item.name}
-                  {isActive && (
-                    <ChevronRight className="w-4 h-4 ml-auto text-indigo-400" />
-                  )}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 px-3 py-4 overflow-y-auto">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 px-3 mb-1">MENU</p>
+            <div className="space-y-1">
+              {navigation.map((item) => {
+                const isActive = currentPageName === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    to={createPageUrl(item.href)}
+                    onClick={() => setSidebarOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200",
+                      isActive
+                        ? "border-l-[3px] border-l-amber-500 text-slate-900 font-semibold rounded-l-none"
+                        : "text-slate-500 font-medium hover:bg-slate-50 hover:text-slate-900"
+                    )}
+                  >
+                    <item.icon className={cn(
+                      "w-5 h-5 transition-colors",
+                      isActive ? "text-amber-500" : "text-slate-400"
+                    )} />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
           </nav>
 
           {/* User section */}
@@ -136,7 +136,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Main content */}
       <div className="lg:pl-72">
         {/* Mobile header */}
-        <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 lg:hidden">
+        <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 lg:hidden">
           <div className="flex items-center justify-between h-full px-4">
             <button
               onClick={() => setSidebarOpen(true)}
