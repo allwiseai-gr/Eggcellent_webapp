@@ -60,14 +60,14 @@ export default function Dashboard() {
   };
 
   const quickActions = [
-    { to: createPageUrl('Orders') + '?new=true', label: 'Νέα Παραγγελία', icon: Plus, iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
-    { to: createPageUrl('Customers') + '?new=true', label: 'Νέος Πελάτης', icon: Users, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
-    { to: createPageUrl('PackingList'), label: 'Φόρτωση', icon: Package, iconBg: 'bg-slate-100', iconColor: 'text-slate-600' },
-    { to: createPageUrl('Products'), label: 'Προϊόντα', icon: Truck, iconBg: 'bg-orange-100', iconColor: 'text-orange-600' },
+    { to: createPageUrl('Orders') + '?new=true', label: 'Νέα Παραγγελία', icon: Plus, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+    { to: createPageUrl('Customers') + '?new=true', label: 'Νέος Πελάτης', icon: Users, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+    { to: createPageUrl('PackingList'), label: 'Φόρτωση', icon: Package, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+    { to: createPageUrl('Products'), label: 'Προϊόντα', icon: Truck, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="bg-slate-50 min-h-screen p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Αρχική</h1>
         <p className="text-slate-500 mt-1">Επισκόπηση παραγγελιών</p>
@@ -111,7 +111,7 @@ export default function Dashboard() {
 
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900">Πρόσφατες Παραγγελίες</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Πρόσφατες Παραγγελίες</h2>
           <Link to={createPageUrl('Orders')}>
             <Button variant="ghost" size="sm" className="text-amber-600 hover:text-amber-700 hover:bg-amber-50">
               Όλες <ArrowRight className="w-4 h-4 ml-1" />
