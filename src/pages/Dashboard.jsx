@@ -71,13 +71,13 @@ export default function Dashboard() {
         ) : (
           <>
             <Link to={createPageUrl('Orders') + '?filter=today'}>
-              <StatCard title="Σημερινές" value={todayOrders.length} icon={Clock} subtitle="Παραδόσεις" />
-            </Link>
-            <Link to={createPageUrl('Orders') + '?filter=today-delivered'}>
-              <StatCard title="Παραδόθηκαν" value={`${deliveredToday.length}/${todayOrders.length}`} icon={CheckCircle2} subtitle="Σήμερα" />
-            </Link>
-            <StatCard title="Εκκρεμείς" value={pendingOrders.length} icon={Package} subtitle="Παραγγελίες" />
-            <StatCard title="Πελάτες" value={customers.length} icon={Users} subtitle={`${products.length} προϊόντα`} />
+              <StatCard title="Σημερινές" value={todayOrders.length} icon={Clock} subtitle="Παραδόσεις" color="amber" />
+              </Link>
+              <Link to={createPageUrl('Orders') + '?filter=today-delivered'}>
+              <StatCard title="Παραδόθηκαν" value={`${deliveredToday.length}/${todayOrders.length}`} icon={CheckCircle2} subtitle="Σήμερα" color="emerald" />
+              </Link>
+              <StatCard title="Εκκρεμείς" value={pendingOrders.length} icon={Package} subtitle="Παραγγελίες" color="orange" />
+              <StatCard title="Πελάτες" value={customers.length} icon={Users} subtitle={`${products.length} προϊόντα`} color="violet" />
           </>
         )}
       </div>
