@@ -62,7 +62,7 @@ export default function Layout({ children, currentPageName }) {
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               onClick={() => setSidebarOpen(false)}
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                 <ShoppingCart className="w-4 h-4 text-white" />
               </div>
               <span className="font-semibold text-slate-900 tracking-tight">Eggcellent</span>
@@ -145,7 +145,7 @@ export default function Layout({ children, currentPageName }) {
               <Menu className="w-5 h-5 text-slate-600" />
             </button>
             <Link to={createPageUrl('Dashboard')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
                 <ShoppingCart className="w-3.5 h-3.5 text-white" />
               </div>
               <span className="font-semibold text-slate-900">Eggcellent</span>
